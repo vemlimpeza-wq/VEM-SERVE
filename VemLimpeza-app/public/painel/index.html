@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VEM Limpeza | Orquestrador de Orçamentos</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            title: ['Fredoka', 'sans-serif'],
+          },
+          colors: {
+            obsidian: '#090d16',
+            cardbg: 'rgba(17, 24, 39, 0.7)',
+            neonpurple: '#5C32F0',
+            neonviolet: '#8B5CF6',
+            neongold: '#FBBF24',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    body {
+      background: radial-gradient(circle at 50% -20%, #1e1145, #090d16 60%);
+      color: #f3f4f6;
+    }
+    
+    .glass {
+      background: rgba(17, 25, 40, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .glass-input {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: #8B5CF6;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+      outline: none;
+    }
+    
+    .neon-border-glow {
+      box-shadow: 0 0 20px rgba(92, 50, 240, 0.15);
+      border: 1px solid rgba(92, 50, 240, 0.3);
+    }
+
+    .neon-border-glow:hover {
+      box-shadow: 0 0 25px rgba(92, 50, 240, 0.3);
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+    
+    .neon-text-glow {
+      text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+
+    /* Estilização da barra de rolagem */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(92, 50, 240, 0.4);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.6);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-12 font-sans selection:bg-neonpurple selection:text-white">
+
+  <!-- TOP BAR -->
+  <header class="sticky top-0 z-40 w-full border-b border-white/5 bg-obsidian/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-12 w-auto bg-white rounded-lg p-1 flex items-center justify-center overflow-hidden shadow-lg shadow-neonpurple/10">
+          <img src="/logo.jpg" alt="VEM Limpeza Logo" class="h-full w-auto object-contain">
+        </div>
+        <div>
+          <h1 class="font-title font-bold text-2xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-neonviolet bg-clip-text text-transparent">VEM Limpeza</h1>
+          <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Orquestrador de Orçamentos</p>
+        </div>
+      </div>
+      
+      <!-- Status Conexão + Auto-Sync -->
+      <div class="flex items-center space-x-3">
+        <!-- Robô Auto-Sync Status -->
+        <div id="autoSyncStatus" class="flex items-center space-x-2 px-3 py-1.5 rounded-full text-[10px] font-semibold glass border-slate-500/20 text-slate-400">
+          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+          <span>Robô Pausado</span>
+        </div>
+        
+        <button id="autoSyncToggle" onclick="toggleAutoSync()" class="p-2 rounded-xl glass hover:bg-white/5 transition duration-200 text-slate-300 hover:text-white" title="Iniciar auto-sync">
+          <i class="fa-solid fa-play"></i>
+        </button>
+        
+        <div id="connectionStatus" class="flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-medium glass border-red-500/20 text-red-400">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+          <span>Desconectado</span>
+        </div>
+        
+        <button onclick="openSettings()" class="p-2.5 rounded-xl glass hover:bg-white/5 transition duration-200 text-slate-300 hover:text-white">
+          <i class="fa-solid fa-gear text-lg"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+    
+    <!-- DASHBOARD STATS -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="glass p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 text-white/5 text-7xl"><i class="fa-solid fa-clipboard-list"></i></div>
+        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Total de Pedidos</span>
+        <span id="statTotal" class="text-3xl font-bold font-title mt-2 text-white">0</span>
+      </div>
+      <div class="glass p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden border-amber-500/10">
+        <div class="absolute -right-4 -bottom-4 text-amber-500/5 text-7xl"><i class="fa-solid fa-clock"></i></div>
+        <span class="text-xs text-amber-400/80 font-semibold uppercase tracking-wider">Pendentes</span>
+        <span id="statPending" class="text-3xl font-bold font-title mt-2 text-amber-400 neon-text-glow">0</span>
+      </div>
+      <div class="glass p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden border-emerald-500/10">
+        <div class="absolute -right-4 -bottom-4 text-emerald-500/5 text-7xl"><i class="fa-solid fa-paper-plane"></i></div>
+        <span class="text-xs text-emerald-400/80 font-semibold uppercase tracking-wider">Enviados</span>
+        <span id="statSent" class="text-3xl font-bold font-title mt-2 text-emerald-400">0</span>
+      </div>
+      <div class="glass p-5 rounded-2xl flex flex-col justify-between relative overflow-hidden border-rose-500/10">
+        <div class="absolute -right-4 -bottom-4 text-rose-500/5 text-7xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <span class="text-xs text-rose-400/80 font-semibold uppercase tracking-wider">Erros</span>
+        <span id="statError" class="text-3xl font-bold font-title mt-2 text-rose-400">0</span>
+      </div>
+    </section>
+
+    <!-- CONTROL BAR -->
+    <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <!-- Filtros -->
+      <div class="flex p-1 rounded-xl glass max-w-max">
+        <button onclick="setFilter('all')" id="filterBtn-all" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 bg-neonpurple text-white">Todos</button>
+        <button onclick="setFilter('pending')" id="filterBtn-pending" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Pendentes</button>
+        <button onclick="setFilter('sent')" id="filterBtn-sent" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Enviados</button>
+        <button onclick="setFilter('error')" id="filterBtn-error" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Erros</button>
+      </div>
+
+      <!-- Ações -->
+      <div class="flex items-center space-x-3">
+        <span id="lastSyncTime" class="text-[10px] text-slate-500 font-mono hidden sm:inline"></span>
+        <button onclick="cleanOldQuotes()" id="btnCleanOld" class="px-5 py-2.5 rounded-xl glass hover:bg-rose-500/10 hover:border-rose-500/30 transition flex items-center space-x-2 text-sm font-semibold text-rose-400 border border-rose-500/20">
+          <i class="fa-solid fa-trash-can"></i>
+          <span class="hidden sm:inline">Limpar Antigos</span>
+        </button>
+        <button onclick="fetchData(false)" class="px-5 py-2.5 rounded-xl glass hover:bg-white/5 transition flex items-center space-x-2 text-sm font-semibold">
+          <i class="fa-solid fa-rotate"></i>
+          <span>Atualizar</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- BATCH ACTION BAR (Escondida por padrão) -->
+    <section id="batchActionBar" class="hidden flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 glass p-4 rounded-3xl border-neonpurple/30 animate-[slideIn_0.2s_ease]">
+      <div class="flex items-center space-x-3">
+        <span class="text-xs text-neonviolet font-bold uppercase tracking-wider bg-neonpurple/15 px-3 py-1.5 rounded-xl border border-neonpurple/20">
+          <span id="batchCount">0</span> Selecionados
+        </span>
+        <button onclick="toggleSelectAllPending()" class="text-xs text-slate-400 hover:text-white font-semibold transition">
+          Selecionar Todos os Pendentes
+        </button>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button onclick="sendSelectedQuotes()" class="px-4 py-2 bg-neonpurple hover:bg-neonpurple/90 text-white rounded-xl font-bold text-xs flex items-center space-x-1.5 transition shadow-lg shadow-neonpurple/20">
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>Enviar Selecionados</span>
+        </button>
+        <button onclick="clearSelection()" class="px-4 py-2 glass hover:bg-white/5 text-slate-300 hover:text-white rounded-xl font-semibold text-xs transition">
+          Cancelar
+        </button>
+      </div>
+    </section>
+
+    <!-- MAIN LIST / GRID -->
+    <section>
+      <!-- Loader -->
+      <div id="loader" class="hidden flex-col items-center justify-center py-24 space-y-4">
+        <div class="w-12 h-12 border-4 border-neonpurple/30 border-t-neonpurple rounded-full animate-spin"></div>
+        <p class="text-sm text-slate-400">Sincronizando com o Google Sheets...</p>
+      </div>
+
+      <!-- Config Required State -->
+      <div id="configRequiredState" class="flex flex-col items-center justify-center text-center py-20 glass rounded-3xl p-8 max-w-2xl mx-auto">
+        <div class="w-20 h-20 rounded-full bg-neonpurple/10 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-link-slash text-neonviolet text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-title font-bold mb-2">Conexão Necessária</h3>
+        <p class="text-slate-400 text-sm mb-6 max-w-md">Para começar a gerenciar seus orçamentos, configure a URL do seu Google Apps Script clicando no botão abaixo.</p>
+        <button onclick="openSettings()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-neonpurple to-neonviolet hover:opacity-90 transition font-semibold text-sm shadow-lg shadow-neonpurple/30">
+          <i class="fa-solid fa-plug mr-2"></i> Configurar Conexão
+        </button>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden flex-col items-center justify-center text-center py-20 glass rounded-3xl p-8 max-w-xl mx-auto">
+        <div class="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+          <i class="fa-solid fa-folder-open text-slate-500 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-title font-semibold mb-1">Nenhum orçamento encontrado</h3>
+        <p class="text-slate-400 text-xs">Parece que não há dados correspondentes para o filtro selecionado.</p>
+      </div>
+
+      <!-- Cards Grid -->
+      <div id="cardsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Renderizado via JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DIALOG SETTINGS MODAL -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-obsidian/85 backdrop-blur-sm">
+    <div class="glass w-full max-w-lg rounded-3xl p-6 shadow-2xl relative overflow-hidden animate-[scaleUp_0.3s_ease]">
+      <!-- Background Effect -->
+      <div class="absolute -right-24 -top-24 w-48 h-48 bg-neonpurple/20 rounded-full blur-3xl"></div>
+      
+      <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+        <h3 class="text-lg font-title font-bold flex items-center">
+          <i class="fa-solid fa-gear text-neonpurple mr-2.5"></i> Configurações do Sistema
+        </h3>
+        <button onclick="closeSettings()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      
+      <div class="space-y-5">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">URL da API do Google Apps Script</label>
+          <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-4 py-3 rounded-xl glass-input text-sm text-white">
+          <p class="text-[10px] text-slate-400 mt-2 leading-relaxed">
+            <i class="fa-solid fa-circle-info mr-1"></i> Esta URL é gerada ao implantar o código `google_apps_script.js` como "Aplicativo Web" no editor de Scripts do Google Sheets.
+          </p>
+        </div>
+      </div>
+      
+      <div class="mt-8 flex items-center justify-end space-x-3">
+        <button onclick="closeSettings()" class="px-5 py-2.5 rounded-xl glass text-xs font-semibold text-slate-300 hover:text-white">Cancelar</button>
+        <button onclick="saveSettings()" class="px-6 py-2.5 rounded-xl bg-neonpurple text-white text-xs font-bold shadow-lg shadow-neonpurple/20 hover:opacity-95 transition">Salvar Conexão</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN IMAGE VIEW MODAL -->
+  <div id="imageModal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-4 bg-black/95 backdrop-blur-md">
+    <!-- Close & Actions -->
+    <div class="w-full max-w-5xl flex items-center justify-between mb-4 z-10">
+      <div class="flex items-center space-x-3 text-slate-300 text-sm">
+        <i class="fa-solid fa-image text-neonpurple"></i>
+        <span id="modalImageClient" class="font-semibold text-white">Foto do Cliente</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <a id="modalImageLink" href="#" target="_blank" class="p-2.5 rounded-xl bg-white/5 text-slate-300 hover:text-white transition" title="Abrir Original">
+          <i class="fa-solid fa-up-right-from-square"></i>
+        </a>
+        <button onclick="closeImageModal()" class="p-2.5 rounded-xl bg-white/5 text-slate-300 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Image Box -->
+    <div class="w-full max-w-5xl h-[75vh] flex items-center justify-center relative rounded-3xl overflow-hidden border border-white/5 bg-obsidian/50">
+      <img id="modalImg" src="" alt="Ampliada" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl">
+    </div>
+  </div>
+
+  <!-- NOTIFICAÇÕES TOAST -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-3"></div>
+
+  <!-- JS Link -->
+  <script src="/painel/app.js"></script>
+</body>
+</html>

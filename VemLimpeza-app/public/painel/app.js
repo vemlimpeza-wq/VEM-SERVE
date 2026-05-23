@@ -5,7 +5,12 @@
 let quotesData = [];
 let currentFilter = 'all'; // all, pending, sent, error
 let selectedRowIndexes = []; // Índices das linhas selecionadas para lote
-let apiURL = localStorage.getItem('google_apps_script_url') || 'https://script.google.com/macros/s/AKfycbzpZQYuE-rg0BOajGrYA3Cg0yZAZgaDeJvmBY2N6r_PsSbfD95RqZpnxmThAo1Kw46I/exec';
+
+// Configuração do Supabase (lido das Variaveis de Ambiente via URL ou .env na build, ou inserido no HTML)
+// Como estamos em um frontend estático, pegaremos da URL se não estiver no localStorage
+let supabaseUrl = localStorage.getItem('supabase_url') || 'https://xhlsqestbhvdlpsrdjdk.supabase.co';
+let supabaseKey = localStorage.getItem('supabase_anon_key') || 'sb_publishable_O7trOvtZ25cp_4zRHFJChQ_yEAUCoTa';
+let supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
 
 // ============================================================
 // SISTEMA DE AUTO-SYNC (Robô Autônomo)
@@ -109,9 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApp() {
   const inputUrl = document.getElementById('apiUrlInput');
-  if (inputUrl) inputUrl.value = apiURL;
+  if (inputUrl) inputUrl.value = supabaseUrl;
   
-  if (!apiURL) {
+  if (!supabaseClient) {
     document.getElementById('configRequiredState').classList.remove('hidden');
     document.getElementById('cardsGrid').classList.add('hidden');
     document.getElementById('emptyState').classList.add('hidden');
@@ -124,10 +129,9 @@ function initApp() {
   }
 }
 
-// Conectar e buscar dados usando JSONP para evitar bloqueio de CORS
-// silent = true: não mostra toast de sucesso (usado no auto-sync)
-function fetchData(silent) {
-  if (!apiURL) return;
+// Conectar e buscar dados do Supabase
+async function fetchData(silent) {
+  if (!supabaseClient) return;
   
   // Evita chamadas concorrentes
   if (isFetching) {
@@ -146,142 +150,60 @@ function fetchData(silent) {
   // Limpa as seleções anteriores
   selectedRowIndexes = [];
   updateBatchActionPanel();
-  
-  // Gera um nome único para o callback JSONP
-  const callbackName = '_jsonpCallback_' + Date.now();
-  
-  // Timeout de segurança (20 segundos — Google Apps Script pode demorar em cold starts)
-  const timeoutId = setTimeout(function() {
-    if (window[callbackName]) {
-      cleanupJsonp();
-      console.warn("JSONP timeout (20s), tentando fallback...");
-      tryFallbackProxy(silent);
-    }
-  }, 20000);
-  
-  function cleanupJsonp() {
-    delete window[callbackName];
-    const scriptEl = document.getElementById(callbackName);
-    if (scriptEl) scriptEl.remove();
-    clearTimeout(timeoutId);
-  }
-  
-  // Define o callback global que o Google Apps Script vai chamar
-  window[callbackName] = function(result) {
-    cleanupJsonp();
-    
-    try {
-      if (result && result.success) {
-        processSuccess(result, silent);
-      } else {
-        throw new Error((result && result.error) || 'Erro desconhecido da API');
-      }
-    } catch (error) {
-      console.error(error);
-      updateConnectionBadge('error');
-      handleSyncError('Falha ao sincronizar: ' + error.message, silent);
-    } finally {
-      isFetching = false;
-      if (!silent) showLoader(false);
-    }
-  };
-  
-  // Cria um <script> tag para fazer a requisição via JSONP (contorna CORS)
-  const script = document.createElement('script');
-  script.id = callbackName;
-  script.src = `${apiURL}?action=getQuotes&callback=${callbackName}`;
-  script.onerror = function() {
-    cleanupJsonp();
-    console.warn("JSONP onerror, tentando fallback proxy...");
-    tryFallbackProxy(silent);
-  };
-  
-  document.body.appendChild(script);
-}
 
-// Função auxiliar para chamadas JSONP genéricas (permite ler a resposta contornando CORS)
-function fetchJsonp(action, params = {}, timeoutMs = 20000) {
-  return new Promise((resolve, reject) => {
-    const callbackName = '_jsonpCallback_' + Date.now() + Math.floor(Math.random() * 1000);
-    
-    const timeoutId = setTimeout(() => {
-      cleanupJsonp();
-      reject(new Error('Timeout de conexão. O servidor demorou muito para responder.'));
-    }, timeoutMs);
-    
-    function cleanupJsonp() {
-      delete window[callbackName];
-      const scriptEl = document.getElementById(callbackName);
-      if (scriptEl) scriptEl.remove();
-      clearTimeout(timeoutId);
-    }
-    
-    window[callbackName] = function(result) {
-      cleanupJsonp();
-      resolve(result);
-    };
-    
-    const queryParams = new URLSearchParams({ action, callback: callbackName, ...params }).toString();
-    
-    const script = document.createElement('script');
-    script.id = callbackName;
-    script.src = `${apiURL}?${queryParams}`;
-    script.onerror = function() {
-      cleanupJsonp();
-      reject(new Error('Falha na rede ao tentar comunicar com a API.'));
-    };
-    
-    document.body.appendChild(script);
-  });
-}
+  try {
+    const { data, error } = await supabaseClient
+      .from('orcamentos')
+      .select('*')
+      .order('criado_em', { ascending: false });
 
-// Fallback via CORS Proxy caso o Apps Script não suporte JSONP (versão desatualizada)
-async function tryFallbackProxy(silent) {
-  const proxies = [
-    `https://corsproxy.io/?${encodeURIComponent(`${apiURL}?action=getQuotes`)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(`${apiURL}?action=getQuotes`)}`,
-  ];
-
-  for (let i = 0; i < proxies.length; i++) {
-    try {
-      console.log(`Tentando proxy ${i + 1}/${proxies.length}...`);
-      const response = await fetch(proxies[i]);
-      if (!response.ok) throw new Error(`Proxy ${i + 1} respondeu com status ${response.status}`);
-      
-      const text = await response.text();
-      
-      // Verifica se a resposta é um erro HTML do Google (não JSON)
-      if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-        throw new Error('A API do Google Apps Script retornou uma página de erro HTML. O script precisa ser reimplantado.');
-      }
-      
-      const result = JSON.parse(text);
-      if (result && result.success) {
-        processSuccess(result, silent);
-        if (!silent) showLoader(false);
-        isFetching = false;
-        return; // Sucesso — sai do loop
-      } else {
-        throw new Error((result && result.error) || 'Erro na resposta do Proxy');
-      }
-    } catch (error) {
-      console.warn(`Proxy ${i + 1} falhou:`, error.message);
-      if (i === proxies.length - 1) {
-        // Último proxy falhou — reportar erro final
-        console.error("Todos os proxies falharam:", error);
-        updateConnectionBadge('error');
-        handleSyncError('Falha ao conectar com a planilha. Verifique se o Google Apps Script foi reimplantado corretamente.', silent);
-        if (!silent) showLoader(false);
-        isFetching = false;
-      }
+    if (error) {
+      throw error;
     }
+
+    // Mapeia para o formato esperado pelo frontend
+    const mappedQuotes = data.map(item => {
+      // Formata a data para dd/mm/yyyy hh:mm
+      let dateStr = 'Sem data';
+      if (item.criado_em) {
+        const d = new Date(item.criado_em);
+        dateStr = d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit', year: 'numeric'}) + ' ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+      }
+
+      return {
+        rowIndex: item.id,
+        id: item.id,
+        date: dateStr,
+        servico: item.servico,
+        comprimento: item.comprimento,
+        largura: item.largura,
+        lugaresSofa: item.lugares_sofa,
+        tipoColchao: item.tipo_colchao,
+        nome: item.nome,
+        sobrenome: item.sobrenome,
+        email: item.email,
+        whatsapp: item.whatsapp,
+        fotoUrl: item.foto_url,
+        valor: item.valor_orcamento,
+        status: item.status_envio
+      };
+    });
+
+    processSuccess({ quotes: mappedQuotes }, silent);
+  } catch (error) {
+    console.error(error);
+    updateConnectionBadge('error');
+    handleSyncError('Falha ao sincronizar: ' + error.message, silent);
+  } finally {
+    isFetching = false;
+    if (!silent) showLoader(false);
   }
 }
 
-// Processa o sucesso dos dados (usado por JSONP e Proxy)
+// Processa o sucesso dos dados
 function processSuccess(result, silent) {
-  // Inverte a ordem para exibir os mais recentes no topo
-  quotesData = result.quotes.reverse();
+  // Dados já vêm ordenados pela data descendente do Supabase
+  quotesData = result.quotes;
   updateStats();
   renderQuotes();
   updateConnectionBadge('connected');
@@ -505,7 +427,7 @@ function renderQuotes() {
         <div class="mr-3 mt-1.5 flex items-center justify-center">
           <input type="checkbox" 
                  id="chk-${quote.rowIndex}" 
-                 onclick="event.stopPropagation(); toggleSelectQuote(${quote.rowIndex})" 
+                 onclick="event.stopPropagation(); toggleSelectQuote('${quote.rowIndex}')" 
                  ${isSelected ? 'checked' : ''} 
                  class="w-4 h-4 rounded border-white/10 bg-white/5 text-neonpurple focus:ring-neonpurple focus:ring-opacity-25 transition cursor-pointer">
         </div>
@@ -537,7 +459,7 @@ function renderQuotes() {
               <span class="absolute left-3.5 top-2.5 text-xs font-semibold text-slate-400">Kz</span>
               <input type="text" id="val-input-${quote.rowIndex}" placeholder="0,00" value="${quote.valor || ''}" class="w-full pl-9 pr-3 py-2 text-xs rounded-xl glass-input text-white">
             </div>
-            <button onclick="sendQuote(${quote.rowIndex})" id="btn-send-${quote.rowIndex}" class="px-4 py-2 bg-neonpurple hover:bg-neonpurple/90 text-white rounded-xl font-bold text-xs flex items-center space-x-1.5 transition shadow-lg shadow-neonpurple/20">
+            <button onclick="sendQuote('${quote.rowIndex}')" id="btn-send-${quote.rowIndex}" class="px-4 py-2 bg-neonpurple hover:bg-neonpurple/90 text-white rounded-xl font-bold text-xs flex items-center space-x-1.5 transition shadow-lg shadow-neonpurple/20">
               <i class="fa-solid fa-paper-plane"></i>
               <span>Enviar</span>
             </button>
@@ -547,7 +469,7 @@ function renderQuotes() {
     } else {
       let deleteBtnHtml = '';
       if (isOlderThan24h) {
-        deleteBtnHtml = `<button onclick="deleteQuoteAction(${quote.rowIndex})" class="px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-500/10 text-rose-400 transition text-[10px] font-bold flex items-center ml-2" title="Eliminar orçamento (possível após 24h)">
+        deleteBtnHtml = `<button onclick="deleteQuoteAction('${quote.rowIndex}')" class="px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-500/10 text-rose-400 transition text-[10px] font-bold flex items-center ml-2" title="Eliminar orçamento (possível após 24h)">
           <i class="fa-solid fa-trash-can"></i>
         </button>`;
       } else {
@@ -563,7 +485,7 @@ function renderQuotes() {
             <span class="text-lg font-bold font-title text-white">Kz ${quote.valor || '0,00'}</span>
           </div>
           <div class="flex items-center">
-            <button onclick="resendPrompt(${quote.rowIndex}, '${quote.valor}')" class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-[10px] font-bold">
+            <button onclick="resendPrompt('${quote.rowIndex}', '${quote.valor}')" class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-[10px] font-bold">
               <i class="fa-solid fa-rotate-right mr-1"></i> Reenviar
             </button>
             ${deleteBtnHtml}
@@ -627,17 +549,21 @@ async function sendQuote(rowIndex) {
   btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
   
   try {
-    const result = await fetchJsonp('sendQuote', { rowIndex: rowIndex, valor: valor });
-    
-    if (result && result.success) {
-      showToast('success', 'Orçamento disparado com sucesso!');
-      setTimeout(() => fetchData(true), 2000);
-    } else {
-      throw new Error((result && result.error) || 'Erro desconhecido ao enviar. Atualize o Apps Script.');
+    // Invoca a Edge Function 'send-email' passando o ID do orçamento e o valor
+    const { data, error } = await supabaseClient.functions.invoke('send-email', {
+      body: { quoteId: rowIndex, valor: valor }
+    });
+
+    if (error) {
+      throw error;
     }
+    
+    // A Edge Function encarrega-se de mudar o status para 'Enviado' na Base de Dados
+    showToast('success', 'E-mail de orçamento enviado pelo Brevo!');
+    setTimeout(() => fetchData(true), 2000);
   } catch (error) {
     console.error(error);
-    showToast('error', 'Falha no envio: ' + error.message);
+    showToast('error', 'Falha no envio: ' + (error.message || 'Erro na nuvem'));
     fetchData(true);
   } finally {
     btn.disabled = false;
@@ -667,20 +593,20 @@ function resendPrompt(rowIndex, currentValue) {
 
 // Eliminar Orçamento Específico
 async function deleteQuoteAction(rowIndex) {
-  const confirmMsg = `Deseja realmente eliminar este orçamento?\n\nEsta ação é irreversível na planilha e os dados não voltarão.`;
+  const confirmMsg = `Deseja realmente eliminar este orçamento?\n\nEsta ação é irreversível e os dados não voltarão.`;
   if (!confirm(confirmMsg)) return;
 
   showLoader(true);
   try {
-    const result = await fetchJsonp('deleteQuote', { rowIndex: rowIndex });
+    const { error } = await supabaseClient
+      .from('orcamentos')
+      .delete()
+      .eq('id', rowIndex);
     
-    if (result && result.success) {
-      showToast('success', 'Orçamento excluído permanentemente!');
-      // Atualiza os dados imediatamente após o sucesso
-      fetchData(true);
-    } else {
-      throw new Error((result && result.error) || 'O script não foi atualizado ou ocorreu um erro.');
-    }
+    if (error) throw error;
+    
+    showToast('success', 'Orçamento excluído permanentemente!');
+    fetchData(true);
   } catch (error) {
     console.error(error);
     showToast('error', 'Falha ao eliminar: ' + error.message);
@@ -733,8 +659,9 @@ function saveSettings() {
     return;
   }
   
-  apiURL = url;
-  localStorage.setItem('google_apps_script_url', url);
+  supabaseUrl = url;
+  localStorage.setItem('supabase_url', url);
+  if (window.supabase) supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
   closeSettings();
   initApp();
 }
@@ -879,12 +806,12 @@ async function sendSelectedQuotes() {
   
   const promises = listToSend.map(async (item) => {
     try {
-      const result = await fetchJsonp('sendQuote', { rowIndex: item.rowIndex, valor: item.valor });
-      if (result && result.success) {
-        successCount++;
-      } else {
-        throw new Error((result && result.error) || 'Erro ao enviar');
-      }
+      const { data, error } = await supabaseClient.functions.invoke('send-email', {
+        body: { quoteId: item.rowIndex, valor: item.valor }
+      });
+        
+      if (error) throw error;
+      successCount++;
     } catch (err) {
       console.error(`Erro ao enviar orçamento da linha ${item.rowIndex}:`, err);
       failCount++;
@@ -909,12 +836,11 @@ async function sendSelectedQuotes() {
 // Limpar Orçamentos Antigos (Enviados há mais de 14 dias)
 // ============================================================
 async function cleanOldQuotes() {
-  if (!apiURL) {
-    showToast('warning', 'Configure a URL da API antes de usar esta função.');
+  if (!supabaseClient) {
+    showToast('warning', 'Supabase não conectado.');
     return;
   }
 
-  // Conta localmente quantos orçamentos "Enviado" podem ser antigos
   const sentQuotes = quotesData.filter(q => (q.status || '').toLowerCase().trim() === 'enviado');
   if (sentQuotes.length === 0) {
     showToast('warning', 'Não há orçamentos enviados para limpar.');
@@ -930,17 +856,22 @@ async function cleanOldQuotes() {
     btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i><span class="hidden sm:inline">Limpando...</span>';
   }
 
-  showToast('warning', 'Eliminando orçamentos antigos da planilha...');
+  showToast('warning', 'Eliminando orçamentos antigos do banco de dados...');
 
   try {
-    const result = await fetchJsonp('cleanOldQuotes');
+    const d = new Date();
+    d.setDate(d.getDate() - 14);
     
-    if (result && result.success) {
-      showToast('success', `Limpeza concluída! ${result.deleted || 0} orçamentos removidos.`);
-      setTimeout(() => fetchData(true), 2000);
-    } else {
-      throw new Error((result && result.error) || 'Erro desconhecido ao limpar. Atualize o Apps Script.');
-    }
+    const { data, error } = await supabaseClient
+      .from('orcamentos')
+      .delete()
+      .lt('criado_em', d.toISOString())
+      .eq('status_envio', 'Enviado');
+      
+    if (error) throw error;
+    
+    showToast('success', `Limpeza concluída!`);
+    setTimeout(() => fetchData(true), 2000);
   } catch (error) {
     console.error('Erro ao limpar orçamentos antigos:', error);
     showToast('error', 'Falha na limpeza: ' + error.message);

@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import gsap from 'gsap';
 import { X, ArrowRight, UploadCloud, CheckCircle2, Sofa, Bed, Sparkles, Grid } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 const schemaTapete = z.object({
   comprimento: z.string().min(1, 'Obrigatório'),
@@ -19,7 +20,8 @@ const schemaContact = z.object({
   whatsapp: z.string().min(9, 'WhatsApp inválido'),
 });
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzl-5VjksukMhWx-UI73_EsbOcfV3_rDG8k8CNrPQEVoOVVyC-JSQ-Z-j0p9JTsNvJ5/exec';
+// Google Apps Script url removida - Usando Supabase diretamente
+const GOOGLE_SCRIPT_URL = '';
 
 const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.7) => {
   return new Promise((resolve, reject) => {
@@ -216,29 +218,70 @@ const QuoteModal = ({ isOpen, onClose }) => {
     console.log("Enviando finalData:", finalData);
 
     try {
-      if (GOOGLE_SCRIPT_URL !== 'COLE_AQUI_A_SUA_URL_DO_APP_SCRIPT') {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'text/plain',
-          },
-          body: JSON.stringify(finalData)
-        });
-      } else {
-        console.warn("Aviso: URL do Google Apps Script não configurada. Teste simulado.", finalData);
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulando loading
+      let photoUrl = null;
+      
+      // 1. Upload da foto se existir
+      if (photoUploaded && photoData && photoData.rawBase64) {
+        try {
+          const byteCharacters = atob(photoData.rawBase64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: photoData.mimeType || 'image/jpeg' });
+          
+          const fileName = `${Date.now()}_${photoData.fileName || 'foto.jpg'}`.replace(/\s+/g, '_');
+          
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('fotos')
+            .upload(fileName, blob, {
+              contentType: photoData.mimeType || 'image/jpeg',
+              cacheControl: '3600',
+              upsert: false
+            });
+            
+          if (uploadError) {
+            console.error("Erro no upload da foto:", uploadError);
+          } else if (uploadData) {
+            const { data: publicUrlData } = supabase.storage.from('fotos').getPublicUrl(fileName);
+            photoUrl = publicUrlData.publicUrl;
+          }
+        } catch (uploadErr) {
+          console.error("Exceção ao subir foto:", uploadErr);
+        }
       }
 
-      // Com mode: 'no-cors', a resposta é opaca (não podemos lê-la),
-      // mas se o fetch não lançou exceção, o envio foi bem-sucedido.
+      // 2. Inserção na tabela do Supabase
+      const { error: insertError } = await supabase
+        .from('orcamentos')
+        .insert([
+          {
+            servico: servicoNome,
+            comprimento: comprimento || null,
+            largura: largura || null,
+            lugares_sofa: lugaresSofa || null,
+            tipo_colchao: tipoColchao || null,
+            nome: data.nome,
+            sobrenome: data.sobrenome,
+            email: data.email,
+            whatsapp: data.whatsapp,
+            foto_url: photoUrl,
+            status_envio: 'Pendente'
+          }
+        ]);
+
+      if (insertError) {
+        throw insertError;
+      }
+
       setIsSubmitting(false);
       gsap.to(contentRef.current, { opacity: 0, scale: 0.95, duration: 0.3, onComplete: () => setIsSuccess(true) });
       gsap.fromTo(contentRef.current, { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, delay: 0.3 });
     } catch (error) {
-      console.error("Erro ao enviar dados:", error);
+      console.error("Erro ao enviar dados para o Supabase:", error);
       setIsSubmitting(false);
-      alert("Houve um erro de conexão ao enviar. Tente novamente.");
+      alert("Houve um erro de conexão ao enviar o pedido. Tente novamente.");
     }
   };
 

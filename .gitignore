@@ -1,0 +1,11 @@
+# Credenciais e arquivos locais da automação
+.env
+credentials.json.json
+token.json
+__pycache__/
+.tmp/
+diagnose_report.md
+walkthrough.md
+task.md
+implementation_plan.md
+reset_repo.py

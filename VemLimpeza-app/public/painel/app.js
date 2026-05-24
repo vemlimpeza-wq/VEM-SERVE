@@ -339,7 +339,7 @@ function renderQuotes() {
     if (hasValidPhoto) {
       const cleanImgUrl = getGoogleDriveImageUrl(quote.fotoUrl);
       imgSection = `
-        <div class="relative w-full h-40 rounded-2xl overflow-hidden mb-4 group cursor-pointer border border-white/5 bg-slate-900/40" onclick="openImageModalByIndex(${quote.rowIndex})">
+        <div class="relative w-full h-40 rounded-2xl overflow-hidden mb-4 group cursor-pointer border border-white/5 bg-slate-900/40" onclick="openImageModalByIndex('${quote.rowIndex}')">
           <img src="${cleanImgUrl}" alt="Foto do orçamento" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
           <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-200">
             <i class="fa-solid fa-magnifying-glass-plus text-white text-xl"></i>
@@ -459,9 +459,12 @@ function renderQuotes() {
               <span class="absolute left-3.5 top-2.5 text-xs font-semibold text-slate-400">Kz</span>
               <input type="text" id="val-input-${quote.rowIndex}" placeholder="0,00" value="${quote.valor || ''}" class="w-full pl-9 pr-3 py-2 text-xs rounded-xl glass-input text-white">
             </div>
-            <button onclick="sendQuote('${quote.rowIndex}')" id="btn-send-${quote.rowIndex}" class="px-4 py-2 bg-neonpurple hover:bg-neonpurple/90 text-white rounded-xl font-bold text-xs flex items-center space-x-1.5 transition shadow-lg shadow-neonpurple/20">
-              <i class="fa-solid fa-paper-plane"></i>
-              <span>Enviar</span>
+            <button onclick="sendQuote('${quote.rowIndex}')" id="btn-send-${quote.rowIndex}" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs flex items-center justify-center transition" title="Enviar E-mail">
+              <i class="fa-solid fa-envelope"></i>
+            </button>
+            <button onclick="sendWhatsApp('${quote.rowIndex}')" id="btn-wa-${quote.rowIndex}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center space-x-1.5 transition shadow-lg shadow-emerald-600/20" title="Enviar WhatsApp">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>WhatsApp</span>
             </button>
           </div>
         </div>
@@ -484,7 +487,10 @@ function renderQuotes() {
             <span class="block text-[9px] uppercase font-bold text-slate-500 tracking-wider">Valor Enviado</span>
             <span class="text-lg font-bold font-title text-white">Kz ${quote.valor || '0,00'}</span>
           </div>
-          <div class="flex items-center">
+          <div class="flex items-center space-x-2">
+            <button onclick="openChatModal('${quote.rowIndex}')" class="px-3 py-1.5 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-400 transition text-[10px] font-bold flex items-center" title="Abrir Chat do WhatsApp">
+              <i class="fa-brands fa-whatsapp mr-1 text-sm"></i> Chat
+            </button>
             <button onclick="resendPrompt('${quote.rowIndex}', '${quote.valor}')" class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-[10px] font-bold">
               <i class="fa-solid fa-rotate-right mr-1"></i> Reenviar
             </button>
@@ -639,6 +645,173 @@ function getGoogleDriveImageUrl(url) {
     }
   }
   return url;
+}
+
+// Enviar WhatsApp
+async function sendWhatsApp(rowIndex) {
+  const input = document.getElementById(`val-input-${rowIndex}`);
+  const btn = document.getElementById(`btn-wa-${rowIndex}`);
+  const quote = quotesData.find(q => q.rowIndex === rowIndex);
+  
+  if (!input || !btn || !quote) return;
+  const valor = input.value.trim();
+  
+  if (!valor) {
+    showToast('warning', 'Por favor, insira um valor válido.');
+    input.focus();
+    return;
+  }
+  
+  btn.disabled = true;
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>`;
+  
+  try {
+    let telefone = String(quote.whatsapp).replace(/\D/g, '');
+    if (!telefone) throw new Error("Cliente não possui número de WhatsApp cadastrado.");
+    // Formatar número
+    if (telefone.length === 9) telefone = '244' + telefone; // Angola default
+    
+    // Constrói a mensagem
+    const mensagem = `Olá ${quote.nome}! Somos da Vem Limpeza.\nO orçamento para o seu serviço de ${quote.servico} ficou no valor de Kz ${valor}.\nGostaria de agendar?`;
+
+    // Invoca a Edge Function 'send-whatsapp'
+    const { data, error } = await supabaseClient.functions.invoke('send-whatsapp', {
+      body: { 
+        telefone: telefone, 
+        mensagem: mensagem,
+        orcamento_id: quote.id
+      }
+    });
+
+    if (error) throw error;
+    
+    // Atualiza status na tabela de orçamentos
+    await supabaseClient.from('orcamentos')
+      .update({ status_envio: 'Enviado', valor_orcamento: valor })
+      .eq('id', quote.id);
+    
+    showToast('success', 'Mensagem enviada pelo WhatsApp!');
+    setTimeout(() => fetchData(true), 2000);
+  } catch (error) {
+    console.error(error);
+    showToast('error', 'Falha no envio WhatsApp: ' + (error.message || 'Erro na nuvem'));
+    fetchData(true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
+// Lógica de Chat WhatsApp
+function openChatModal(rowIndex) {
+  const quote = quotesData.find(q => q.rowIndex === rowIndex);
+  if (!quote) return;
+  
+  let telefone = String(quote.whatsapp).replace(/\D/g, '');
+  if (telefone.length === 9) telefone = '244' + telefone;
+
+  document.getElementById('chatClientName').innerText = `${quote.nome} ${quote.sobrenome}`;
+  document.getElementById('chatClientPhone').innerText = `+${telefone}`;
+  document.getElementById('chatQuoteId').value = quote.id;
+  document.getElementById('chatPhone').value = telefone;
+  
+  document.getElementById('chatModal').classList.remove('hidden');
+  document.getElementById('chatModal').classList.add('flex');
+  
+  loadChatMessages(telefone, quote.id);
+}
+
+function closeChatModal() {
+  document.getElementById('chatModal').classList.add('hidden');
+  document.getElementById('chatModal').classList.remove('flex');
+}
+
+async function loadChatMessages(telefone, quoteId) {
+  const msgContainer = document.getElementById('chatMessages');
+  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full"><div class="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div></div>`;
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('whatsapp_mensagens')
+      .select('*')
+      .eq('telefone_cliente', telefone)
+      .order('criado_em', { ascending: true });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      msgContainer.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-center text-slate-500">
+          <i class="fa-regular fa-comments text-3xl mb-2 opacity-50"></i>
+          <p class="text-xs">Nenhuma mensagem neste histórico.</p>
+        </div>
+      `;
+      return;
+    }
+
+    msgContainer.innerHTML = '';
+    data.forEach(msg => {
+      const isOut = msg.direcao === 'saida';
+      const timeStr = new Date(msg.criado_em).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+      
+      const div = document.createElement('div');
+      div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'}`;
+      div.innerHTML = `
+        <div class="max-w-[80%] rounded-2xl px-4 py-2 text-sm ${isOut ? 'bg-emerald-600 text-white rounded-br-sm' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-bl-sm'}">
+          <p class="whitespace-pre-wrap">${msg.mensagem}</p>
+          <span class="text-[9px] block text-right mt-1 ${isOut ? 'text-emerald-200' : 'text-slate-500'}">${timeStr}</span>
+        </div>
+      `;
+      msgContainer.appendChild(div);
+    });
+
+    // Scroll to bottom
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+
+  } catch (error) {
+    console.error(error);
+    msgContainer.innerHTML = `<div class="text-rose-400 text-center text-sm p-4">Erro ao carregar mensagens.</div>`;
+  }
+}
+
+async function sendChatMessage(e) {
+  e.preventDefault();
+  
+  const input = document.getElementById('chatInputMsg');
+  const quoteId = document.getElementById('chatQuoteId').value;
+  const telefone = document.getElementById('chatPhone').value;
+  const btn = document.getElementById('chatSendBtn');
+  
+  const mensagem = input.value.trim();
+  if (!mensagem) return;
+  
+  input.disabled = true;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+  
+  try {
+    const { data, error } = await supabaseClient.functions.invoke('send-whatsapp', {
+      body: { 
+        telefone: telefone, 
+        mensagem: mensagem,
+        orcamento_id: quoteId
+      }
+    });
+
+    if (error) throw error;
+    
+    input.value = '';
+    loadChatMessages(telefone, quoteId);
+  } catch (error) {
+    console.error(error);
+    showToast('error', 'Falha ao enviar mensagem.');
+  } finally {
+    input.disabled = false;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+    input.focus();
+  }
 }
 
 // Modals

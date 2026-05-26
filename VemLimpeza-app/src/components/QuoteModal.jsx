@@ -336,9 +336,23 @@ const QuoteModal = ({ isOpen, onClose, initialWhatsapp, isStandalone }) => {
               <h3 className="font-heading font-bold text-3xl text-dark mb-4">Orçamento Solicitado!</h3>
               <p className="text-dark/70 font-sans mb-8">A nossa equipa recebeu os seus dados e entrará em contacto via WhatsApp em alguns minutos com a sua proposta personalizada.</p>
               {isStandalone ? (
-                <a href="https://wa.me/244929907105" className="magnetic-btn w-full bg-emerald-500 text-white py-4 rounded-xl font-bold flex justify-center items-center">
+                <button 
+                  onClick={() => {
+                    // Tenta fechar a aba (funciona quando aberta via link externo no celular)
+                    window.close();
+                    // Fallback: se window.close() não funcionou após 300ms, tenta voltar no histórico
+                    setTimeout(() => {
+                      window.history.back();
+                    }, 300);
+                    // Fallback final: redireciona para o WhatsApp
+                    setTimeout(() => {
+                      window.location.href = 'https://wa.me/244927558203';
+                    }, 600);
+                  }} 
+                  className="magnetic-btn w-full bg-emerald-500 text-white py-4 rounded-xl font-bold flex justify-center items-center"
+                >
                   Voltar ao WhatsApp
-                </a>
+                </button>
               ) : (
                 <button onClick={handleClose} className="magnetic-btn w-full bg-dark text-white py-4 rounded-xl font-bold">
                   Voltar ao site

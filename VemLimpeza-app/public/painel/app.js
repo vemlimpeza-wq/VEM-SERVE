@@ -201,9 +201,44 @@ async function fetchData(silent) {
 }
 
 // Processa o sucesso dos dados
-function processSuccess(result, silent) {
+async function processSuccess(result, silent) {
   // Dados já vêm ordenados pela data descendente do Supabase
   quotesData = result.quotes;
+  
+  try {
+    // Buscar as últimas mensagens para avaliar lidas/não lidas
+    const { data: msgs } = await supabaseClient
+      .from('whatsapp_mensagens')
+      .select('telefone_cliente, direcao, criado_em')
+      .order('criado_em', { ascending: false })
+      .limit(500);
+      
+    if (msgs) {
+      // Agrupar por telefone para achar a última mensagem
+      const lastMsgs = {};
+      msgs.forEach(m => {
+        if (!lastMsgs[m.telefone_cliente]) lastMsgs[m.telefone_cliente] = m;
+      });
+      
+      quotesData.forEach(q => {
+        let telefone = String(q.whatsapp || '').replace(/\D/g, '');
+        if (telefone.length === 9) telefone = '244' + telefone;
+        
+        const lastMsg = lastMsgs[telefone];
+        q.hasUnreadMsg = false;
+        
+        if (lastMsg && lastMsg.direcao === 'entrada') {
+          const lastRead = localStorage.getItem('chat_read_' + telefone);
+          if (!lastRead || new Date(lastMsg.criado_em) > new Date(lastRead)) {
+            q.hasUnreadMsg = true;
+          }
+        }
+      });
+    }
+  } catch (err) {
+    console.error("Erro ao checar mensagens não lidas:", err);
+  }
+
   updateStats();
   renderQuotes();
   updateConnectionBadge('connected');
@@ -382,8 +417,15 @@ function renderQuotes() {
       waNumberOnly = '244' + waNumberOnly;
     }
     
+    const unreadIndicator = quote.hasUnreadMsg 
+      ? `<span class="absolute -top-1 -right-2 flex h-2.5 w-2.5" title="Nova mensagem não lida no Chat">
+           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+           <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+         </span>`
+      : '';
+
     const waLink = quote.whatsapp 
-      ? `<a href="https://wa.me/${waNumberOnly}" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition text-xs font-semibold flex items-center mt-1"><i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i>${quote.whatsapp}</a>`
+      ? `<div class="relative inline-block mt-1"><a href="https://wa.me/${waNumberOnly}" target="_blank" class="text-emerald-400 hover:text-emerald-300 transition text-xs font-semibold flex items-center pr-2"><i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i>${quote.whatsapp}</a>${unreadIndicator}</div>`
       : '<span class="text-xs text-slate-500 flex items-center mt-1"><i class="fa-solid fa-phone-slash mr-1.5"></i>Sem número</span>';
 
     // Listagem dinâmica de todas as colunas adicionais da planilha
@@ -464,7 +506,11 @@ function renderQuotes() {
             </button>
             <button onclick="sendWhatsApp('${quote.rowIndex}')" id="btn-wa-${quote.rowIndex}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center space-x-1.5 transition shadow-lg shadow-emerald-600/20" title="Enviar WhatsApp">
               <i class="fa-brands fa-whatsapp text-sm"></i>
-              <span>WhatsApp</span>
+              <span class="hidden sm:inline">WhatsApp</span>
+            </button>
+            <button onclick="openChatModal('${quote.rowIndex}')" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs flex items-center justify-center transition relative" title="Abrir Chat do WhatsApp">
+              <i class="fa-regular fa-comments"></i>
+              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>` : ''}
             </button>
           </div>
         </div>
@@ -488,8 +534,9 @@ function renderQuotes() {
             <span class="text-lg font-bold font-title text-white">Kz ${quote.valor || '0,00'}</span>
           </div>
           <div class="flex items-center space-x-2">
-            <button onclick="openChatModal('${quote.rowIndex}')" class="px-3 py-1.5 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-400 transition text-[10px] font-bold flex items-center" title="Abrir Chat do WhatsApp">
+            <button onclick="openChatModal('${quote.rowIndex}')" class="px-3 py-1.5 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-400 transition text-[10px] font-bold flex items-center relative" title="Abrir Chat do WhatsApp">
               <i class="fa-brands fa-whatsapp mr-1 text-sm"></i> Chat
+              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>` : ''}
             </button>
             <button onclick="resendPrompt('${quote.rowIndex}', '${quote.valor}')" class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-[10px] font-bold">
               <i class="fa-solid fa-rotate-right mr-1"></i> Reenviar
@@ -710,6 +757,13 @@ function openChatModal(rowIndex) {
   
   let telefone = String(quote.whatsapp).replace(/\D/g, '');
   if (telefone.length === 9) telefone = '244' + telefone;
+
+  // Marcar chat como lido
+  localStorage.setItem('chat_read_' + telefone, new Date().toISOString());
+  if (quote.hasUnreadMsg) {
+    quote.hasUnreadMsg = false;
+    renderQuotes(); // Atualiza a UI para remover o indicador vermelho
+  }
 
   document.getElementById('chatClientName').innerText = `${quote.nome} ${quote.sobrenome}`;
   document.getElementById('chatClientPhone').innerText = `+${telefone}`;

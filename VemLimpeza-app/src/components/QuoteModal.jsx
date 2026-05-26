@@ -71,7 +71,7 @@ const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.7) =
   });
 };
 
-const QuoteModal = ({ isOpen, onClose }) => {
+const QuoteModal = ({ isOpen, onClose, initialWhatsapp, isStandalone }) => {
   const [step, setStep] = useState(1);
   const [serviceType, setServiceType] = useState(null); // 'tapete' | 'estofado'
   const [photoUploaded, setPhotoUploaded] = useState(false);
@@ -85,9 +85,15 @@ const QuoteModal = ({ isOpen, onClose }) => {
   const contentRef = useRef(null);
 
   const { register: registerStep2, handleSubmit: handleSubmitStep2, formState: { errors: errors2 }, reset: resetStep2 } = useForm();
-  const { register: registerStep3, handleSubmit: handleSubmitStep3, formState: { errors: errors3 }, reset: resetStep3 } = useForm({
+  const { register: registerStep3, handleSubmit: handleSubmitStep3, formState: { errors: errors3 }, reset: resetStep3, setValue: setValueStep3 } = useForm({
     resolver: zodResolver(schemaContact)
   });
+
+  useEffect(() => {
+    if (initialWhatsapp) {
+      setValueStep3('whatsapp', initialWhatsapp);
+    }
+  }, [initialWhatsapp, setValueStep3]);
 
   // Handle Entrance/Exit animation
   useEffect(() => {
@@ -296,9 +302,11 @@ const QuoteModal = ({ isOpen, onClose }) => {
         className="relative bg-white w-full max-w-xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col"
         style={{ minHeight: '500px' }}
       >
-        <button onClick={handleClose} className="absolute top-6 right-6 text-dark/50 hover:text-dark z-10">
-          <X className="w-6 h-6" />
-        </button>
+        {!isStandalone && (
+          <button onClick={handleClose} className="absolute top-6 right-6 text-dark/50 hover:text-dark z-10">
+            <X className="w-6 h-6" />
+          </button>
+        )}
 
         {!isSuccess && (
           <div className="bg-background border-b border-dark/5 px-8 py-6">
@@ -327,9 +335,15 @@ const QuoteModal = ({ isOpen, onClose }) => {
               </div>
               <h3 className="font-heading font-bold text-3xl text-dark mb-4">Orçamento Solicitado!</h3>
               <p className="text-dark/70 font-sans mb-8">A nossa equipa recebeu os seus dados e entrará em contacto via WhatsApp em alguns minutos com a sua proposta personalizada.</p>
-              <button onClick={handleClose} className="magnetic-btn w-full bg-dark text-white py-4 rounded-xl font-bold">
-                Voltar ao site
-              </button>
+              {isStandalone ? (
+                <a href={`https://wa.me/244927558203`} className="magnetic-btn w-full bg-emerald-500 text-white py-4 rounded-xl font-bold flex justify-center items-center">
+                  Voltar ao WhatsApp
+                </a>
+              ) : (
+                <button onClick={handleClose} className="magnetic-btn w-full bg-dark text-white py-4 rounded-xl font-bold">
+                  Voltar ao site
+                </button>
+              )}
             </div>
           )}
 
@@ -510,7 +524,7 @@ const QuoteModal = ({ isOpen, onClose }) => {
 
               <div className="mb-8">
                 <label className="block text-sm font-bold text-dark mb-2">WhatsApp</label>
-                <input {...registerStep3('whatsapp')} type="tel" className={`w-full bg-background border ${errors3.whatsapp ? 'border-red-500' : 'border-gray-200'} rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary`} placeholder="EX: 923 000000" />
+                <input {...registerStep3('whatsapp')} type="tel" className={`w-full bg-background border ${errors3.whatsapp ? 'border-red-500' : 'border-gray-200'} rounded-xl px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary ${initialWhatsapp ? 'opacity-70 bg-gray-100 cursor-not-allowed' : ''}`} placeholder="EX: 923 000000" readOnly={!!initialWhatsapp} />
                 {errors3.whatsapp && <span className="text-red-500 text-xs mt-1 block">{errors3.whatsapp.message}</span>}
               </div>
 

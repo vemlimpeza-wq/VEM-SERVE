@@ -57,6 +57,49 @@ serve(async (req) => {
                     if (error) {
                       console.error("Erro ao gravar no Supabase:", error)
                     }
+
+                    // Auto-resposta com Link Mágico para a primeira mensagem
+                    const { count } = await supabase
+                      .from('whatsapp_mensagens')
+                      .select('*', { count: 'exact', head: true })
+                      .eq('telefone_cliente', fromPhone)
+                      .eq('direcao', 'entrada')
+
+                    if (count === 1) {
+                      const WHATSAPP_API_TOKEN = Deno.env.get("WHATSAPP_API_TOKEN")
+                      const WHATSAPP_PHONE_ID = Deno.env.get("WHATSAPP_PHONE_ID")
+                      const APP_URL = Deno.env.get("APP_URL") || "https://vemlimpeza.vercel.app" // Fallback seguro
+                      
+                      const linkMsg = `Olá! Que bom ter você aqui na Vem Limpeza ✨\n\nPara podermos te dar o valor exato do serviço, por favor preencha os detalhes (com foto, se possível) de forma rápida e segura no link abaixo:\n\n🔗 ${APP_URL}/?wa=${fromPhone}&source=whatsapp`
+
+                      if (WHATSAPP_API_TOKEN && WHATSAPP_PHONE_ID) {
+                        const replyRes = await fetch(`https://graph.facebook.com/v17.0/${WHATSAPP_PHONE_ID}/messages`, {
+                          method: "POST",
+                          headers: {
+                            "Authorization": `Bearer ${WHATSAPP_API_TOKEN}`,
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            messaging_product: "whatsapp",
+                            recipient_type: "individual",
+                            to: fromPhone,
+                            type: "text",
+                            text: { preview_url: true, body: linkMsg }
+                          })
+                        })
+                        
+                        if (replyRes.ok) {
+                          // Guardar a auto-resposta no histórico
+                          await supabase.from('whatsapp_mensagens').insert([{
+                            telefone_cliente: fromPhone,
+                            mensagem: linkMsg,
+                            direcao: 'saida'
+                          }])
+                        } else {
+                          console.error("Erro ao enviar auto-resposta:", await replyRes.text())
+                        }
+                      }
+                    }
                   }
                 }
               }

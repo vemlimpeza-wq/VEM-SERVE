@@ -72,7 +72,7 @@ serve(async (req) => {
                     if (repliedCount === 0) {
                       const WHATSAPP_API_TOKEN = Deno.env.get("WHATSAPP_API_TOKEN")
                       const WHATSAPP_PHONE_ID = Deno.env.get("WHATSAPP_PHONE_ID")
-                      const APP_URL = Deno.env.get("APP_URL") || "https://clientes-vem-k62e.vercel.app" // Fallback seguro para o domínio correto da Vercel
+                      const APP_URL = Deno.env.get("APP_URL") || "https://dist-phi-blush-18.vercel.app" // Novo URL principal da Vercel
                       
                       const linkMsg = `Olá! Que bom ter você aqui na Vem Limpeza ✨\n\nPara podermos te dar o valor exato do serviço, por favor preencha os detalhes (com foto, se possível) de forma rápida e segura no link abaixo:\n\n🔗 ${APP_URL}/?wa=${fromPhone}&source=whatsapp`
 

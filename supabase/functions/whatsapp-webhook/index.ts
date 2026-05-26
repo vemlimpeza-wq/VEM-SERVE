@@ -58,18 +58,18 @@ serve(async (req) => {
                       console.error("Erro ao gravar no Supabase:", error)
                     }
 
-                    // Auto-resposta com Link Mágico para a primeira mensagem nas últimas 12 horas
+                    // Auto-resposta com Link Mágico apenas se não enviamos nenhuma resposta (saída) nas últimas 12 horas
                     const dozeHorasAtras = new Date();
                     dozeHorasAtras.setHours(dozeHorasAtras.getHours() - 12);
                     
-                    const { count } = await supabase
+                    const { count: repliedCount } = await supabase
                       .from('whatsapp_mensagens')
                       .select('*', { count: 'exact', head: true })
                       .eq('telefone_cliente', fromPhone)
-                      .eq('direcao', 'entrada')
+                      .eq('direcao', 'saida')
                       .gte('criado_em', dozeHorasAtras.toISOString());
 
-                    if (count === 1) {
+                    if (repliedCount === 0) {
                       const WHATSAPP_API_TOKEN = Deno.env.get("WHATSAPP_API_TOKEN")
                       const WHATSAPP_PHONE_ID = Deno.env.get("WHATSAPP_PHONE_ID")
                       const APP_URL = Deno.env.get("APP_URL") || "https://vemlimpeza.vercel.app" // Fallback seguro

@@ -37,8 +37,6 @@ serve(async (req) => {
                 if (message.type === "text") {
                   const fromPhone = message.from
                   const messageText = message.text.body
-                  const botPhoneRaw = change.value.metadata?.display_phone_number || ""
-                  const botPhone = botPhoneRaw.replace(/\D/g, '') // Apenas números
                   
                   console.log(`Mensagem recebida de ${fromPhone}: ${messageText}`)
 
@@ -76,9 +74,7 @@ serve(async (req) => {
                       const WHATSAPP_PHONE_ID = Deno.env.get("WHATSAPP_PHONE_ID")
                       const APP_URL = Deno.env.get("APP_URL") || "https://dist-phi-blush-18.vercel.app" // Novo URL principal da Vercel
                       
-                      // Inclui o número do bot na URL para poder voltar
-                      const botParam = botPhone ? `&bot=${botPhone}` : ''
-                      const linkMsg = `Olá! Que bom ter você aqui na Vem Limpeza ✨\n\nPara podermos te dar o valor exato do serviço, por favor preencha os detalhes (com foto, se possível) de forma rápida e segura no link abaixo:\n\n🔗 ${APP_URL}/?wa=${fromPhone}&source=whatsapp${botParam}`
+                      const linkMsg = `Olá! Que bom ter você aqui na Vem Limpeza ✨\n\nPara podermos te dar o valor exato do serviço, por favor preencha os detalhes (com foto, se possível) de forma rápida e segura no link abaixo:\n\n🔗 ${APP_URL}/?wa=${fromPhone}&source=whatsapp`
 
                       if (WHATSAPP_API_TOKEN && WHATSAPP_PHONE_ID) {
                         const replyRes = await fetch(`https://graph.facebook.com/v17.0/${WHATSAPP_PHONE_ID}/messages`, {

@@ -16,12 +16,10 @@ function App() {
   const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
   const waParam = searchParams.get('wa');
   const sourceParam = searchParams.get('source');
-  const botParam = searchParams.get('bot');
   const isStandaloneMode = !!waParam || sourceParam === 'whatsapp';
 
   const [isModalOpen, setIsModalOpen] = useState(isStandaloneMode);
   const [initialWhatsapp, setInitialWhatsapp] = useState(waParam || '');
-  const [botWhatsapp, setBotWhatsapp] = useState(botParam || '');
   const [isWhatsappSource, setIsWhatsappSource] = useState(isStandaloneMode);
 
   useEffect(() => {
@@ -53,7 +51,6 @@ function App() {
         }} 
         initialWhatsapp={initialWhatsapp}
         isStandalone={isWhatsappSource}
-        botWhatsapp={botWhatsapp}
       />
     </div>
   );

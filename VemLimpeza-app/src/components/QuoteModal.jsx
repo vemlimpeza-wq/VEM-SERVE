@@ -294,13 +294,13 @@ const QuoteModal = ({ isOpen, onClose, initialWhatsapp, isStandalone }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-      <div ref={overlayRef} className="absolute inset-0 bg-dark/80 backdrop-blur-sm" onClick={handleClose}></div>
+    <div className={`fixed inset-0 z-[100] flex items-center justify-center ${isStandalone ? 'bg-background p-0' : 'p-4 sm:p-6'}`}>
+      {!isStandalone && <div ref={overlayRef} className="absolute inset-0 bg-dark/80 backdrop-blur-sm" onClick={handleClose}></div>}
       
       <div 
         ref={modalRef} 
-        className="relative bg-white w-full max-w-xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col"
-        style={{ minHeight: '500px' }}
+        className={`relative bg-white w-full ${isStandalone ? 'h-full max-w-md mx-auto rounded-none shadow-none border-x border-gray-100' : 'max-w-xl rounded-[2rem] shadow-2xl'} overflow-hidden flex flex-col`}
+        style={isStandalone ? {} : { minHeight: '500px' }}
       >
         {!isStandalone && (
           <button onClick={handleClose} className="absolute top-6 right-6 text-dark/50 hover:text-dark z-10">

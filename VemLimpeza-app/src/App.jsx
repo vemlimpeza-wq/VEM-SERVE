@@ -13,29 +13,20 @@ import QuoteModal from './components/QuoteModal';
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [initialWhatsapp, setInitialWhatsapp] = useState('');
-  const [isWhatsappSource, setIsWhatsappSource] = useState(false);
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const waParam = searchParams.get('wa');
+  const sourceParam = searchParams.get('source');
+  const isStandaloneMode = !!waParam || sourceParam === 'whatsapp';
+
+  const [isModalOpen, setIsModalOpen] = useState(isStandaloneMode);
+  const [initialWhatsapp, setInitialWhatsapp] = useState(waParam || '');
+  const [isWhatsappSource, setIsWhatsappSource] = useState(isStandaloneMode);
 
   useEffect(() => {
     // Basic smooth scroll setup for GSAP if needed
     let ctx = gsap.context(() => {
       // Global animations or scroll triggers can be initialized here
     });
-
-    // Check URL parameters
-    const params = new URLSearchParams(window.location.search);
-    const wa = params.get('wa');
-    const source = params.get('source');
-
-    if (wa) {
-      setInitialWhatsapp(wa);
-      setIsModalOpen(true);
-    }
-    
-    if (source === 'whatsapp' || wa) {
-      setIsWhatsappSource(true);
-    }
 
     return () => ctx.revert();
   }, []);

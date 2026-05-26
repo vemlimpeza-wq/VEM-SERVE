@@ -338,17 +338,12 @@ const QuoteModal = ({ isOpen, onClose, initialWhatsapp, isStandalone }) => {
               {isStandalone ? (
                 <button 
                   onClick={() => {
-                    // Tenta fechar a aba (funciona quando aberta via link externo no celular)
+                    // Tenta fechar a aba do navegador (funciona quando aberta via link externo)
                     window.close();
-                    // Fallback: se window.close() não funcionou após 300ms, tenta voltar no histórico
-                    setTimeout(() => {
-                      window.history.back();
-                    }, 300);
-                    // Fallback final: redireciona para o WhatsApp
-                    setTimeout(() => {
-                      window.location.href = 'https://wa.me/244927558203';
-                    }, 600);
-                  }} 
+                    // Fallback: se window.close() não funcionar (alguns navegadores bloqueiam),
+                    // volta na história do navegador após um pequeno delay
+                    setTimeout(() => { window.history.back(); }, 300);
+                  }}
                   className="magnetic-btn w-full bg-emerald-500 text-white py-4 rounded-xl font-bold flex justify-center items-center"
                 >
                   Voltar ao WhatsApp

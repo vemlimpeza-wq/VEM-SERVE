@@ -126,6 +126,7 @@ function initApp() {
     // Auto-start: busca dados e inicia o robô automaticamente
     fetchData(false);
     startAutoSync();
+    initRealtime(); // Ativar escuta em tempo real do chat
   }
 }
 
@@ -748,6 +749,85 @@ async function sendWhatsApp(rowIndex) {
     btn.disabled = false;
     btn.innerHTML = originalHtml;
   }
+}
+
+// ============================================================
+// CHAT REATIVO (REALTIME) E NOTIFICAÇÕES
+// ============================================================
+function playNotificationSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+    oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.1); // A4
+
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.2);
+  } catch(e) {
+    console.error("Audio play falhou:", e);
+  }
+}
+
+let realtimeChannel = null;
+
+function initRealtime() {
+  if (!supabaseClient) return;
+
+  if (realtimeChannel) {
+    supabaseClient.removeChannel(realtimeChannel);
+  }
+
+  realtimeChannel = supabaseClient.channel('custom-insert-channel')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'whatsapp_mensagens' },
+      (payload) => {
+        const novaMensagem = payload.new;
+        
+        // Se for mensagem recebida (do cliente)
+        if (novaMensagem.direcao === 'entrada') {
+          playNotificationSound();
+          
+          const chatModal = document.getElementById('chatModal');
+          const isChatOpen = !chatModal.classList.contains('hidden');
+          const currentChatPhone = document.getElementById('chatPhone').value;
+          
+          // Encontrar o cliente
+          const quote = quotesData.find(q => {
+            let num = String(q.whatsapp || '').replace(/\D/g, '');
+            if(num.length === 9) num = '244' + num;
+            return num === novaMensagem.telefone_cliente;
+          });
+          
+          const nomeCliente = quote ? `${quote.nome} ${quote.sobrenome}` : novaMensagem.telefone_cliente;
+          
+          if (isChatOpen && currentChatPhone === novaMensagem.telefone_cliente) {
+            // O chat dessa pessoa está aberto! Atualiza as mensagens em tempo real
+            const quoteId = document.getElementById('chatQuoteId').value;
+            loadChatMessages(currentChatPhone, quoteId);
+          } else {
+            // Chat não está aberto, mostrar notificação verde e atualizar bolinha
+            showToast('success', `Nova mensagem de ${nomeCliente}!`);
+            if (quote) {
+              quote.hasUnreadMsg = true;
+              renderQuotes(); // Atualiza a lista na tela imediatamente
+            }
+          }
+        }
+      }
+    )
+    .subscribe();
 }
 
 // Lógica de Chat WhatsApp

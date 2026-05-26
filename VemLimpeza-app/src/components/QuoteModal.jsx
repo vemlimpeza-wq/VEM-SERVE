@@ -71,7 +71,7 @@ const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.7) =
   });
 };
 
-const QuoteModal = ({ isOpen, onClose, initialWhatsapp, isStandalone }) => {
+const QuoteModal = ({ isOpen, onClose, initialWhatsapp = '', isStandalone = false, botWhatsapp = '' }) => {
   const [step, setStep] = useState(1);
   const [serviceType, setServiceType] = useState(null); // 'tapete' | 'estofado'
   const [photoUploaded, setPhotoUploaded] = useState(false);
@@ -336,7 +336,7 @@ const QuoteModal = ({ isOpen, onClose, initialWhatsapp, isStandalone }) => {
               <h3 className="font-heading font-bold text-3xl text-dark mb-4">Orçamento Solicitado!</h3>
               <p className="text-dark/70 font-sans mb-8">A nossa equipa recebeu os seus dados e entrará em contacto via WhatsApp em alguns minutos com a sua proposta personalizada.</p>
               {isStandalone ? (
-                <a href="https://wa.me/244929907105" className="magnetic-btn w-full bg-emerald-500 text-white py-4 rounded-xl font-bold flex justify-center items-center">
+                <a href={botWhatsapp ? `https://wa.me/${botWhatsapp}` : "whatsapp://send"} className="magnetic-btn w-full bg-emerald-500 text-white py-4 rounded-xl font-bold flex justify-center items-center">
                   Voltar ao WhatsApp
                 </a>
               ) : (

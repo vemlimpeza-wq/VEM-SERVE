@@ -863,7 +863,7 @@ function closeChatModal() {
 
 async function loadChatMessages(telefone, quoteId) {
   const msgContainer = document.getElementById('chatMessages');
-  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full relative z-10"><div class="w-10 h-10 border-4 border-teal-500/30 border-t-teal-400 rounded-full animate-spin"></div></div>`;
+  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full relative z-10"><div class="w-10 h-10 border-4 border-[#00a884]/30 border-t-[#00a884] rounded-full animate-spin"></div></div>`;
   
   try {
     const { data, error } = await supabaseClient
@@ -876,8 +876,8 @@ async function loadChatMessages(telefone, quoteId) {
 
     if (!data || data.length === 0) {
       msgContainer.innerHTML = `
-        <div class="flex flex-col items-center justify-center h-full text-center text-teal-200/40 relative z-10">
-          <div class="w-16 h-16 bg-[#0a1e27]/50 rounded-full flex items-center justify-center mb-3 shadow-inner border border-white/5">
+        <div class="flex flex-col items-center justify-center h-full text-center text-[#8696a0] relative z-10">
+          <div class="w-16 h-16 bg-[#f0f2f5] rounded-full flex items-center justify-center mb-3 shadow-sm border border-black/5">
             <i class="fa-regular fa-comments text-3xl opacity-60"></i>
           </div>
           <p class="text-sm font-medium">Nenhuma mensagem neste histórico.</p>
@@ -894,11 +894,11 @@ async function loadChatMessages(telefone, quoteId) {
       const div = document.createElement('div');
       div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease] relative z-10`;
       div.innerHTML = `
-        <div class="max-w-[85%] sm:max-w-[75%] px-4 py-3 text-[15px] shadow-lg ${isOut ? 'bg-[#0f766e] text-[#f0fdf4] border border-teal-500/30 rounded-2xl rounded-tr-sm shadow-teal-900/40' : 'bg-[#fef3c7] text-[#78350f] border border-amber-200/50 rounded-2xl rounded-tl-sm shadow-black/20'}">
-          <p class="whitespace-pre-wrap leading-relaxed">${msg.mensagem}</p>
-          <span class="text-[10px] flex justify-end items-center mt-1.5 ${isOut ? 'text-teal-200/80' : 'text-[#92400e]/80'} font-semibold tracking-wide">
+        <div class="max-w-[85%] sm:max-w-[75%] px-3 py-1.5 sm:px-4 sm:py-2 text-[14px] sm:text-[15px] shadow-sm ${isOut ? 'bg-[#d9fdd3] text-[#111b21] rounded-2xl rounded-tr-sm' : 'bg-white text-[#111b21] rounded-2xl rounded-tl-sm'}">
+          <p class="whitespace-pre-wrap break-words leading-[1.4]">${msg.mensagem}</p>
+          <span class="text-[11px] flex justify-end items-center mt-1 text-[#667781] font-medium tracking-tight">
             ${timeStr}
-            ${isOut ? '<i class="fa-solid fa-check-double ml-1.5 opacity-80"></i>' : ''}
+            ${isOut ? '<i class="fa-solid fa-check-double ml-1 text-[#53bdeb]"></i>' : ''}
           </span>
         </div>
       `;
@@ -921,13 +921,14 @@ async function sendChatMessage(e) {
   const quoteId = document.getElementById('chatQuoteId').value;
   const telefone = document.getElementById('chatPhone').value;
   const btn = document.getElementById('chatSendBtn');
+  const visualBtn = document.getElementById('chatVisualSendBtn');
   
   const mensagem = input.value.trim();
   if (!mensagem) return;
   
   input.disabled = true;
   btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+  if(visualBtn) visualBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-lg sm:text-xl"></i>';
   
   try {
     const { data, error } = await supabaseClient.functions.invoke('send-whatsapp', {
@@ -949,7 +950,7 @@ async function sendChatMessage(e) {
   } finally {
     input.disabled = false;
     btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-paper-plane text-xl ml-1"></i>';
+    if(visualBtn) visualBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-lg sm:text-xl ml-0.5"></i>';
     input.focus();
   }
 }

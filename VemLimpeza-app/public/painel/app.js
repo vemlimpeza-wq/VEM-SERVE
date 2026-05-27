@@ -894,9 +894,9 @@ async function loadChatMessages(telefone, quoteId) {
       const div = document.createElement('div');
       div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease] relative z-10`;
       div.innerHTML = `
-        <div class="max-w-[85%] sm:max-w-[75%] px-3 py-1.5 sm:px-4 sm:py-2 text-[14px] sm:text-[15px] shadow-sm ${isOut ? 'bg-[#d9fdd3] text-[#111b21] rounded-2xl rounded-tr-sm' : 'bg-white text-[#111b21] rounded-2xl rounded-tl-sm'}">
-          <p class="whitespace-pre-wrap break-words leading-[1.4]">${msg.mensagem}</p>
-          <span class="text-[11px] flex justify-end items-center mt-1 text-[#667781] font-medium tracking-tight">
+        <div class="max-w-[85%] sm:max-w-[75%] px-2.5 py-1.5 sm:px-4 sm:py-2 text-[13.5px] sm:text-[15px] shadow-sm ${isOut ? 'bg-[#d9fdd3] text-[#111b21] rounded-2xl rounded-tr-sm' : 'bg-white text-[#111b21] rounded-2xl rounded-tl-sm'}">
+          <p class="whitespace-pre-wrap break-words leading-[1.35]">${msg.mensagem}</p>
+          <span class="text-[10px] sm:text-[11px] flex justify-end items-center mt-0.5 sm:mt-1 text-[#667781] font-medium tracking-tight">
             ${timeStr}
             ${isOut ? '<i class="fa-solid fa-check-double ml-1 text-[#53bdeb]"></i>' : ''}
           </span>

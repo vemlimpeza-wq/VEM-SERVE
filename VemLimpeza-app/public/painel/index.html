@@ -282,19 +282,19 @@
 
   <!-- WHATSAPP CHAT MODAL -->
   <div id="chatModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-all">
-    <div class="w-full max-w-3xl h-[100dvh] sm:h-[90vh] flex flex-col rounded-none sm:rounded-2xl overflow-hidden shadow-2xl relative animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease] bg-[#e5ddd5]">
+    <div class="w-full max-w-3xl h-full sm:h-[90vh] flex flex-col rounded-none sm:rounded-2xl overflow-hidden shadow-2xl relative animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease] bg-[#e5ddd5]">
       <!-- Header -->
-      <div class="flex items-center justify-between px-3 py-2.5 sm:px-4 sm:py-3 bg-[#008069] shadow-sm z-10 relative">
-        <div class="flex items-center space-x-3 relative z-10 min-w-0">
+      <div class="flex items-center justify-between px-2 py-2 sm:px-4 sm:py-3 bg-[#008069] shadow-sm z-10 relative pt-[max(8px,env(safe-area-inset-top))]">
+        <div class="flex items-center space-x-2 sm:space-x-3 relative z-10 min-w-0">
           <button onclick="closeChatModal()" class="sm:hidden text-white/90 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full active:bg-white/10 -ml-1 flex-shrink-0">
-            <i class="fa-solid fa-arrow-left text-xl"></i>
+            <i class="fa-solid fa-arrow-left text-[18px]"></i>
           </button>
-          <div class="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center overflow-hidden flex-shrink-0">
-            <i class="fa-solid fa-user text-white text-xl mt-2"></i>
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-300 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <i class="fa-solid fa-user text-white text-[18px] sm:text-xl mt-2"></i>
           </div>
           <div class="flex flex-col overflow-hidden min-w-0">
-            <h3 class="text-[16px] sm:text-lg font-semibold text-white leading-tight truncate" id="chatClientName">Cliente</h3>
-            <p class="text-[12px] sm:text-[13px] text-white/80 font-normal truncate" id="chatClientPhone">+244...</p>
+            <h3 class="text-[15px] sm:text-lg font-semibold text-white leading-tight truncate" id="chatClientName">Cliente</h3>
+            <p class="text-[11px] sm:text-[13px] text-white/80 font-normal truncate" id="chatClientPhone">+244...</p>
           </div>
         </div>
         <div class="flex space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
@@ -319,23 +319,23 @@
       </div>
       
       <!-- Input Area -->
-      <div class="p-2 sm:p-3 bg-[#f0f2f5] z-10 flex items-end space-x-2">
-        <div class="flex items-end space-x-2 flex-1 bg-white rounded-3xl sm:rounded-[24px] px-3 py-1 sm:py-1.5 shadow-sm min-h-[44px] sm:min-h-[50px]">
-          <button class="text-[#8696a0] hover:text-[#54656f] p-2 flex-shrink-0 transition-colors">
-            <i class="fa-regular fa-face-smile text-xl sm:text-2xl"></i>
+      <div class="p-2 sm:p-3 bg-[#f0f2f5] z-10 flex items-end space-x-1.5 sm:space-x-2 pb-[max(8px,env(safe-area-inset-bottom))]">
+        <div class="flex items-end space-x-1 sm:space-x-2 flex-1 bg-white rounded-3xl sm:rounded-[24px] px-2 sm:px-3 py-1 sm:py-1.5 shadow-sm min-h-[40px] sm:min-h-[50px]">
+          <button class="text-[#8696a0] hover:text-[#54656f] p-1.5 sm:p-2 flex-shrink-0 transition-colors">
+            <i class="fa-regular fa-face-smile text-[19px] sm:text-2xl"></i>
           </button>
-          <button class="text-[#8696a0] hover:text-[#54656f] p-2 flex-shrink-0 transition-colors mr-1">
-            <i class="fa-solid fa-paperclip text-lg sm:text-xl"></i>
+          <button class="text-[#8696a0] hover:text-[#54656f] p-1.5 sm:p-2 flex-shrink-0 transition-colors mr-0.5">
+            <i class="fa-solid fa-paperclip text-[17px] sm:text-xl"></i>
           </button>
           <form id="chatForm" onsubmit="sendChatMessage(event)" class="flex-1 flex items-end m-0">
             <input type="hidden" id="chatQuoteId" value="">
             <input type="hidden" id="chatPhone" value="">
-            <textarea id="chatInputMsg" rows="1" placeholder="Mensagem" class="w-full bg-transparent border-none text-[15px] sm:text-[16px] text-[#111b21] placeholder-[#8696a0] focus:ring-0 py-2 sm:py-2.5 resize-none max-h-28 min-h-[40px] leading-relaxed hide-scrollbar m-0 p-0 shadow-none outline-none" autocomplete="off" required oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(event); }"></textarea>
+            <textarea id="chatInputMsg" rows="1" placeholder="Mensagem" class="w-full bg-transparent border-none text-[14px] sm:text-[16px] text-[#111b21] placeholder-[#8696a0] focus:ring-0 py-1.5 sm:py-2.5 resize-none max-h-24 min-h-[36px] leading-relaxed hide-scrollbar m-0 p-0 shadow-none outline-none" autocomplete="off" required oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(event); }"></textarea>
             <button type="submit" id="chatSendBtn" class="hidden"></button>
           </form>
         </div>
-        <button onclick="document.getElementById('chatSendBtn').click()" class="min-h-[44px] min-w-[44px] sm:min-h-[50px] sm:min-w-[50px] rounded-full bg-[#00a884] hover:bg-[#008f6f] text-white flex items-center justify-center flex-shrink-0 transition-colors shadow-sm mb-0.5 sm:mb-0" id="chatVisualSendBtn">
-          <i class="fa-solid fa-paper-plane text-lg sm:text-xl ml-0.5"></i>
+        <button onclick="document.getElementById('chatSendBtn').click()" class="min-h-[40px] min-w-[40px] sm:min-h-[50px] sm:min-w-[50px] rounded-full bg-[#00a884] hover:bg-[#008f6f] text-white flex items-center justify-center flex-shrink-0 transition-colors shadow-sm mb-0 sm:mb-0" id="chatVisualSendBtn">
+          <i class="fa-solid fa-paper-plane text-[17px] sm:text-xl ml-0.5"></i>
         </button>
       </div>
     </div>

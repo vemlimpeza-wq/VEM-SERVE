@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>VEM Limpeza | Orquestrador de Orçamentos</title>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -34,9 +34,26 @@
   </script>
   
   <style>
+    /* === ANTI-ZOOM / ANTI-SCROLL LATERAL GLOBAL === */
+    html {
+      overflow-x: hidden !important;
+      overscroll-behavior-x: none;
+      touch-action: pan-y;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
     body {
       background: radial-gradient(circle at 50% -20%, #1e1145, #090d16 60%);
       color: #f3f4f6;
+      overflow-x: hidden !important;
+      overscroll-behavior: none;
+      position: relative;
+      width: 100%;
+      max-width: 100vw;
+    }
+    *, *::before, *::after {
+      max-width: 100vw;
+      box-sizing: border-box;
     }
     
     .glass {
@@ -73,11 +90,6 @@
       text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
     }
 
-    @keyframes slideUp {
-      from { transform: translateY(100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
     /* Estilização da barra de rolagem */
     ::-webkit-scrollbar {
       width: 8px;
@@ -92,12 +104,150 @@
     ::-webkit-scrollbar-thumb:hover {
       background: rgba(139, 92, 246, 0.6);
     }
-    .hide-scrollbar::-webkit-scrollbar {
-      display: none;
+
+    /* ====== MOBILE RESPONSIVO ====== */
+    @media (max-width: 640px) {
+      /* LOCK: sem zoom, sem scroll lateral, sem saltos */
+      html, body {
+        overflow-x: hidden !important;
+        overscroll-behavior: none !important;
+        touch-action: pan-y !important;
+        -webkit-overflow-scrolling: touch;
+        width: 100% !important;
+        max-width: 100vw !important;
+      }
+
+      /* Prevenir zoom em inputs no iOS/Android */
+      input, select, textarea {
+        font-size: 16px !important;
+        touch-action: manipulation;
+      }
+      button, a {
+        touch-action: manipulation;
+        min-height: 44px;
+      }
+
+      /* Container principal sem overflow */
+      main, header, section, div {
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+
+      /* Header compacto */
+      header .max-w-7xl {
+        flex-wrap: wrap;
+        height: auto !important;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        gap: 8px;
+      }
+
+      /* Logo menor */
+      header .h-12 { height: 36px; }
+      header h1 { font-size: 1.1rem !important; }
+      header p { font-size: 8px !important; }
+
+      /* Badges do header em linha compacta */
+      header .flex.items-center.space-x-3 {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      header .flex.items-center.space-x-3 > * {
+        margin-left: 0 !important;
+      }
+
+      /* Stats grid 2 colunas */
+      .grid.grid-cols-2 .glass.p-5 {
+        padding: 12px;
+      }
+      .grid.grid-cols-2 .text-3xl {
+        font-size: 1.5rem;
+      }
+
+      /* Botões de filtro - contidos */
+      .flex.p-1.rounded-xl.glass {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        max-width: 100% !important;
+      }
+
+      /* Cards grid coluna única */
+      #cardsGrid {
+        gap: 16px !important;
+      }
+
+      /* Footer dos cards - botões empilhados */
+      .mt-5.pt-4.border-t .flex.space-x-2 {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .mt-5.pt-4.border-t .flex.space-x-2 > * {
+        margin-left: 0 !important;
+      }
+
+      /* Input de valor mais largo */
+      .mt-5.pt-4.border-t .relative.flex-1 {
+        min-width: 100%;
+        margin-bottom: 8px;
+      }
+
+      /* Modais fullscreen no mobile */
+      #chatModal > div,
+      #settingsModal > div {
+        max-width: 100% !important;
+        max-height: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        margin: 0;
+      }
+      #chatModal,
+      #settingsModal,
+      #imageModal {
+        padding: 0 !important;
+      }
+      #chatModal > div {
+        height: 100dvh !important;
+      }
+
+      /* Image modal */
+      #imageModal .max-w-5xl {
+        max-width: 100%;
+      }
+      #imageModal .h-\[75vh\] {
+        height: 85vh;
+        border-radius: 0 !important;
+      }
+
+      /* Toasts reposicionados */
+      #toastContainer {
+        bottom: 12px !important;
+        right: 12px !important;
+        left: 12px !important;
+        align-items: stretch;
+      }
+
+      /* Batch action bar */
+      #batchActionBar {
+        flex-direction: column;
+        gap: 12px;
+      }
+      #batchActionBar .flex.items-center.space-x-3 {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      main {
+        margin-top: 16px !important;
+      }
     }
-    .hide-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+
+    /* Tablet ajustes */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      #cardsGrid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
     }
   </style>
 </head>
@@ -105,7 +255,7 @@
 
   <!-- TOP BAR -->
   <header class="sticky top-0 z-40 w-full border-b border-white/5 bg-obsidian/80 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-auto sm:h-20 flex items-center justify-between py-3 sm:py-0">
       <div class="flex items-center space-x-3">
         <div class="h-12 w-auto bg-white rounded-lg p-1 flex items-center justify-center overflow-hidden shadow-lg shadow-neonpurple/10">
           <img src="/logo.jpg" alt="VEM Limpeza Logo" class="h-full w-auto object-contain">
@@ -140,7 +290,7 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 mt-4 sm:mt-8">
     
     <!-- DASHBOARD STATS -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -169,21 +319,21 @@
     <!-- CONTROL BAR -->
     <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
       <!-- Filtros -->
-      <div class="flex p-1.5 rounded-2xl glass w-full sm:w-auto overflow-x-auto hide-scrollbar space-x-1">
-        <button onclick="setFilter('all')" id="filterBtn-all" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 bg-neonpurple text-white whitespace-nowrap min-h-[44px]">Todos</button>
-        <button onclick="setFilter('pending')" id="filterBtn-pending" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]">Pendentes</button>
-        <button onclick="setFilter('sent')" id="filterBtn-sent" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]">Enviados</button>
-        <button onclick="setFilter('error')" id="filterBtn-error" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]">Erros</button>
+      <div class="flex p-1 rounded-xl glass max-w-max">
+        <button onclick="setFilter('all')" id="filterBtn-all" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 bg-neonpurple text-white">Todos</button>
+        <button onclick="setFilter('pending')" id="filterBtn-pending" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Pendentes</button>
+        <button onclick="setFilter('sent')" id="filterBtn-sent" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Enviados</button>
+        <button onclick="setFilter('error')" id="filterBtn-error" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Erros</button>
       </div>
 
       <!-- Ações -->
-      <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+      <div class="flex items-center space-x-3">
         <span id="lastSyncTime" class="text-[10px] text-slate-500 font-mono hidden sm:inline"></span>
-        <button onclick="cleanOldQuotes()" id="btnCleanOld" class="flex-1 sm:flex-none justify-center px-5 py-3 sm:py-2.5 rounded-xl glass hover:bg-rose-500/10 hover:border-rose-500/30 transition flex items-center space-x-2 text-sm font-bold text-rose-400 border border-rose-500/20 min-h-[44px]">
+        <button onclick="cleanOldQuotes()" id="btnCleanOld" class="px-5 py-2.5 rounded-xl glass hover:bg-rose-500/10 hover:border-rose-500/30 transition flex items-center space-x-2 text-sm font-semibold text-rose-400 border border-rose-500/20">
           <i class="fa-solid fa-trash-can"></i>
           <span class="hidden sm:inline">Limpar Antigos</span>
         </button>
-        <button onclick="fetchData(false)" class="flex-1 sm:flex-none justify-center px-5 py-3 sm:py-2.5 rounded-xl glass hover:bg-white/5 transition flex items-center space-x-2 text-sm font-bold min-h-[44px]">
+        <button onclick="fetchData(false)" class="px-5 py-2.5 rounded-xl glass hover:bg-white/5 transition flex items-center space-x-2 text-sm font-semibold">
           <i class="fa-solid fa-rotate"></i>
           <span>Atualizar</span>
         </button>
@@ -281,67 +431,42 @@
   </div>
 
   <!-- WHATSAPP CHAT MODAL -->
-  <div id="chatModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm transition-all" style="height:100%;height:100dvh;">
-    <!-- No mobile: tela cheia sem margem. No desktop: centralizado com margem -->
-    <div class="absolute inset-0 sm:relative sm:inset-auto sm:m-auto sm:top-[5vh] sm:max-w-3xl sm:w-full sm:h-[90vh] sm:rounded-2xl flex flex-col overflow-hidden shadow-2xl bg-[#e5ddd5] animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease]">
+  <div id="chatModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-obsidian/85 backdrop-blur-sm">
+    <div class="glass w-full max-w-2xl h-[80vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl relative animate-[scaleUp_0.3s_ease]">
       <!-- Header -->
-      <div class="flex items-center justify-between px-2 py-2 sm:px-4 sm:py-3 bg-[#008069] z-10 flex-shrink-0" style="padding-top:max(8px,env(safe-area-inset-top));">
-        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
-          <button onclick="closeChatModal()" class="sm:hidden text-white/90 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full active:bg-white/10 -ml-1 flex-shrink-0">
-            <i class="fa-solid fa-arrow-left text-[18px]"></i>
-          </button>
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-300 flex items-center justify-center overflow-hidden flex-shrink-0">
-            <i class="fa-solid fa-user text-white text-[18px] sm:text-xl mt-2"></i>
+      <div class="flex items-center justify-between p-5 border-b border-white/5 bg-emerald-900/20">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <i class="fa-brands fa-whatsapp text-emerald-400 text-xl"></i>
           </div>
-          <div class="flex flex-col overflow-hidden min-w-0">
-            <h3 class="text-[15px] sm:text-lg font-semibold text-white leading-tight truncate" id="chatClientName">Cliente</h3>
-            <p class="text-[11px] sm:text-[13px] text-white/80 font-normal truncate" id="chatClientPhone">+244...</p>
+          <div>
+            <h3 class="text-base font-title font-bold text-white" id="chatClientName">Cliente</h3>
+            <p class="text-xs text-emerald-400/80 font-mono" id="chatClientPhone">+244...</p>
           </div>
         </div>
-        <div class="flex space-x-1 sm:space-x-2 flex-shrink-0">
-          <button class="text-white hover:bg-white/10 transition w-10 h-10 flex items-center justify-center rounded-full hidden sm:flex">
-            <i class="fa-solid fa-video text-lg"></i>
-          </button>
-          <button class="text-white hover:bg-white/10 transition w-10 h-10 flex items-center justify-center rounded-full hidden sm:flex">
-            <i class="fa-solid fa-phone text-lg"></i>
-          </button>
-          <button onclick="closeChatModal()" class="hidden sm:flex text-white hover:bg-white/10 transition w-10 h-10 items-center justify-center rounded-full">
-            <i class="fa-solid fa-xmark text-xl"></i>
-          </button>
-        </div>
-      </div>
-      
-      <!-- Messages Area - flex-1 + min-h-0 garante que nunca ultrapassa o espaço disponível -->
-      <div id="chatMessages" class="flex-1 min-h-0 overflow-y-auto p-3 sm:p-5 space-y-3 flex flex-col relative scroll-smooth z-0">
-        <!-- Camada de Fundo -->
-        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[url('./assets/chat-bg-tile.png')] bg-[length:95px_95px] sm:bg-[length:130px_130px] bg-repeat opacity-100" style="filter:contrast(1.6) saturate(1.5) brightness(0.88);"></div>
-        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[#e5ddd5]/30" style="mix-blend-mode:multiply;"></div>
-        
-        <!-- Loader inicial -->
-        <div class="flex items-center justify-center h-full relative z-10">
-          <div class="w-10 h-10 border-4 border-[#00a884]/30 border-t-[#00a884] rounded-full animate-spin"></div>
-        </div>
-      </div>
-      
-      <!-- Input Area - flex-shrink-0 garante que nunca é esmagado -->
-      <div class="flex-shrink-0 p-2 sm:p-3 bg-[#f0f2f5] z-10 flex items-end space-x-1.5 sm:space-x-2" style="padding-bottom:max(8px,env(safe-area-inset-bottom));">
-        <div class="flex items-end space-x-1 sm:space-x-2 flex-1 bg-white rounded-3xl sm:rounded-[24px] px-2 sm:px-3 py-1 sm:py-1.5 shadow-sm min-h-[40px] sm:min-h-[50px]">
-          <button class="text-[#8696a0] hover:text-[#54656f] p-1.5 sm:p-2 flex-shrink-0 transition-colors">
-            <i class="fa-regular fa-face-smile text-[19px] sm:text-2xl"></i>
-          </button>
-          <button class="text-[#8696a0] hover:text-[#54656f] p-1.5 sm:p-2 flex-shrink-0 transition-colors mr-0.5">
-            <i class="fa-solid fa-paperclip text-[17px] sm:text-xl"></i>
-          </button>
-          <form id="chatForm" onsubmit="sendChatMessage(event)" class="flex-1 flex items-end m-0">
-            <input type="hidden" id="chatQuoteId" value="">
-            <input type="hidden" id="chatPhone" value="">
-            <textarea id="chatInputMsg" rows="1" placeholder="Mensagem" class="w-full bg-transparent border-none text-[14px] sm:text-[16px] text-[#111b21] placeholder-[#8696a0] focus:ring-0 py-1.5 sm:py-2.5 resize-none max-h-24 min-h-[36px] leading-relaxed hide-scrollbar m-0 p-0 shadow-none outline-none" autocomplete="off" required oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(event); }"></textarea>
-            <button type="submit" id="chatSendBtn" class="hidden"></button>
-          </form>
-        </div>
-        <button onclick="document.getElementById('chatSendBtn').click()" class="min-h-[40px] min-w-[40px] sm:min-h-[50px] sm:min-w-[50px] rounded-full bg-[#00a884] hover:bg-[#008f6f] text-white flex items-center justify-center flex-shrink-0 transition-colors shadow-sm" id="chatVisualSendBtn">
-          <i class="fa-solid fa-paper-plane text-[17px] sm:text-xl ml-0.5"></i>
+        <button onclick="closeChatModal()" class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+          <i class="fa-solid fa-xmark text-lg"></i>
         </button>
+      </div>
+      
+      <!-- Messages Area -->
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-4 bg-obsidian/30 flex flex-col">
+        <!-- Loader inicial -->
+        <div class="flex items-center justify-center h-full">
+          <div class="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+        </div>
+      </div>
+      
+      <!-- Input Area -->
+      <div class="p-4 border-t border-white/5 bg-slate-900/50">
+        <form id="chatForm" onsubmit="sendChatMessage(event)" class="flex space-x-2">
+          <input type="hidden" id="chatQuoteId" value="">
+          <input type="hidden" id="chatPhone" value="">
+          <input type="text" id="chatInputMsg" placeholder="Escreva uma mensagem..." class="flex-1 px-4 py-3 rounded-xl glass-input text-sm text-white" autocomplete="off" required>
+          <button type="submit" id="chatSendBtn" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition shadow-lg shadow-emerald-600/20 flex items-center justify-center w-12">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -371,7 +496,7 @@
   </div>
 
   <!-- NOTIFICAÇÕES TOAST -->
-  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-3"></div>
+  <div id="toastContainer" class="fixed bottom-3 right-3 left-3 sm:left-auto sm:right-6 sm:bottom-6 z-50 flex flex-col space-y-3"></div>
 
   <!-- JS Link -->
   <script src="/painel/app.js?v=2.0"></script>

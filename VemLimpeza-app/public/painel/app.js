@@ -497,50 +497,52 @@ function renderQuotes() {
       footerAction = `
         <div class="mt-5 pt-4 border-t border-white/5">
           <label class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Inserir Valor e Enviar</label>
-          <div class="flex space-x-2">
-            <div class="relative flex-1">
-              <span class="absolute left-3.5 top-3.5 text-sm font-semibold text-slate-400">Kz</span>
-              <input type="text" id="val-input-${quote.rowIndex}" placeholder="0,00" value="${quote.valor || ''}" class="w-full pl-9 pr-3 py-3 text-sm rounded-xl glass-input text-white min-h-[48px]">
+          <div class="flex flex-col sm:flex-row gap-2">
+            <div class="relative flex-1 w-full">
+              <span class="absolute left-3.5 top-2.5 text-xs font-semibold text-slate-400">Kz</span>
+              <input type="text" id="val-input-${quote.rowIndex}" placeholder="0,00" value="${quote.valor || ''}" class="w-full pl-9 pr-3 py-3 text-sm rounded-xl glass-input text-white">
             </div>
-            <button onclick="sendQuote('${quote.rowIndex}')" id="btn-send-${quote.rowIndex}" class="px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-sm flex items-center justify-center transition min-h-[48px] min-w-[48px]" title="Enviar E-mail">
-              <i class="fa-solid fa-envelope text-base"></i>
-            </button>
-            <button onclick="sendWhatsApp('${quote.rowIndex}')" id="btn-wa-${quote.rowIndex}" class="px-4 sm:px-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-emerald-600/20 min-h-[48px]" title="Enviar WhatsApp">
-              <i class="fa-brands fa-whatsapp text-lg"></i>
-              <span class="hidden sm:inline">WhatsApp</span>
-            </button>
-            <button onclick="openChatModal('${quote.rowIndex}')" class="px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-sm flex items-center justify-center transition relative min-h-[48px] min-w-[48px]" title="Abrir Chat do WhatsApp">
-              <i class="fa-regular fa-comments text-base"></i>
-              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span></span>` : ''}
-            </button>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="sendQuote('${quote.rowIndex}')" id="btn-send-${quote.rowIndex}" class="flex-1 sm:flex-none px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs flex items-center justify-center transition" title="Enviar E-mail">
+                <i class="fa-solid fa-envelope"></i>
+              </button>
+              <button onclick="sendWhatsApp('${quote.rowIndex}')" id="btn-wa-${quote.rowIndex}" class="flex-1 sm:flex-none px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-emerald-600/20" title="Enviar WhatsApp">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+                <span class="hidden sm:inline">WhatsApp</span>
+              </button>
+              <button onclick="openChatModal('${quote.rowIndex}')" class="flex-1 sm:flex-none px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs flex items-center justify-center transition relative" title="Abrir Chat">
+                <i class="fa-regular fa-comments"></i>
+                ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>` : ''}
+              </button>
+            </div>
           </div>
         </div>
       `;
     } else {
       let deleteBtnHtml = '';
       if (isOlderThan24h) {
-        deleteBtnHtml = `<button onclick="deleteQuoteAction('${quote.rowIndex}')" class="px-4 py-3 sm:py-2.5 rounded-xl border border-rose-500/20 hover:bg-rose-500/10 text-rose-400 transition text-xs font-bold flex items-center justify-center min-h-[48px] min-w-[48px] ml-0 sm:ml-2" title="Eliminar orçamento (possível após 24h)">
-          <i class="fa-solid fa-trash-can text-base"></i>
+        deleteBtnHtml = `<button onclick="deleteQuoteAction('${quote.rowIndex}')" class="px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-500/10 text-rose-400 transition text-[10px] font-bold flex items-center ml-2" title="Eliminar orçamento (possível após 24h)">
+          <i class="fa-solid fa-trash-can"></i>
         </button>`;
       } else {
-        deleteBtnHtml = `<button onclick="showToast('warning', 'Apenas orçamentos com mais de 24 horas de existência podem ser eliminados.')" class="px-4 py-3 sm:py-2.5 rounded-xl border border-white/5 bg-white/2 text-slate-500 cursor-not-allowed transition text-xs font-bold flex items-center justify-center min-h-[48px] min-w-[48px] ml-0 sm:ml-2" title="Disponível após 24 horas">
-          <i class="fa-solid fa-trash-can text-base"></i>
+        deleteBtnHtml = `<button onclick="showToast('warning', 'Apenas orçamentos com mais de 24 horas de existência podem ser eliminados.')" class="px-3 py-1.5 rounded-lg border border-white/5 bg-white/2 text-slate-500 cursor-not-allowed transition text-[10px] font-bold flex items-center ml-2" title="Disponível após 24 horas">
+          <i class="fa-solid fa-trash-can"></i>
         </button>`;
       }
 
       footerAction = `
-        <div class="mt-5 pt-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="mt-5 pt-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <span class="block text-[10px] uppercase font-bold text-slate-500 tracking-wider">Valor Enviado</span>
-            <span class="text-2xl font-bold font-title text-white">Kz ${quote.valor || '0,00'}</span>
+            <span class="block text-[9px] uppercase font-bold text-slate-500 tracking-wider">Valor Enviado</span>
+            <span class="text-lg font-bold font-title text-white">Kz ${quote.valor || '0,00'}</span>
           </div>
-          <div class="flex items-center space-x-2 w-full sm:w-auto">
-            <button onclick="openChatModal('${quote.rowIndex}')" class="flex-1 sm:flex-none justify-center px-4 py-3 sm:py-2.5 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-400 transition text-xs sm:text-sm font-bold flex items-center relative min-h-[48px]" title="Abrir Chat do WhatsApp">
-              <i class="fa-brands fa-whatsapp mr-2 text-base"></i> Chat
-              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span></span>` : ''}
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="openChatModal('${quote.rowIndex}')" class="px-4 py-2.5 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-400 transition text-xs font-bold flex items-center relative" title="Abrir Chat">
+              <i class="fa-brands fa-whatsapp mr-1 text-sm"></i> Chat
+              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>` : ''}
             </button>
-            <button onclick="resendPrompt('${quote.rowIndex}', '${quote.valor}')" class="flex-1 sm:flex-none justify-center px-4 py-3 sm:py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-xs sm:text-sm font-bold min-h-[48px] flex items-center">
-              <i class="fa-solid fa-rotate-right mr-2 text-base"></i> <span class="sm:inline">Reenviar</span>
+            <button onclick="resendPrompt('${quote.rowIndex}', '${quote.valor}')" class="px-4 py-2.5 rounded-lg border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-xs font-bold">
+              <i class="fa-solid fa-rotate-right mr-1"></i> Reenviar
             </button>
             ${deleteBtnHtml}
           </div>
@@ -676,9 +678,9 @@ function setFilter(filter) {
   ['all', 'pending', 'sent', 'error'].forEach(f => {
     const btn = document.getElementById(`filterBtn-${f}`);
     if (f === filter) {
-      btn.className = "px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 bg-neonpurple text-white whitespace-nowrap min-h-[44px]";
+      btn.className = "px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 bg-neonpurple text-white";
     } else {
-      btn.className = "px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]";
+      btn.className = "px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white";
     }
   });
   renderQuotes();
@@ -850,36 +852,20 @@ function openChatModal(rowIndex) {
   document.getElementById('chatQuoteId').value = quote.id;
   document.getElementById('chatPhone').value = telefone;
   
-  const modal = document.getElementById('chatModal');
-  modal.classList.remove('hidden');
-  modal.classList.add('flex');
-  
-  // Bloquear scroll do body para o chat não ficar por baixo do conteúdo
-  document.body.style.overflow = 'hidden';
-  document.body.style.position = 'fixed';
-  document.body.style.width = '100%';
-  document.body.style.top = `-${window.scrollY}px`;
+  document.getElementById('chatModal').classList.remove('hidden');
+  document.getElementById('chatModal').classList.add('flex');
   
   loadChatMessages(telefone, quote.id);
 }
 
 function closeChatModal() {
-  const modal = document.getElementById('chatModal');
-  modal.classList.add('hidden');
-  modal.classList.remove('flex');
-  
-  // Restaurar scroll do body
-  const scrollY = document.body.style.top;
-  document.body.style.overflow = '';
-  document.body.style.position = '';
-  document.body.style.width = '';
-  document.body.style.top = '';
-  window.scrollTo(0, parseInt(scrollY || '0') * -1);
+  document.getElementById('chatModal').classList.add('hidden');
+  document.getElementById('chatModal').classList.remove('flex');
 }
 
 async function loadChatMessages(telefone, quoteId) {
   const msgContainer = document.getElementById('chatMessages');
-  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full relative z-10"><div class="w-10 h-10 border-4 border-[#00a884]/30 border-t-[#00a884] rounded-full animate-spin"></div></div>`;
+  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full"><div class="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div></div>`;
   
   try {
     const { data, error } = await supabaseClient
@@ -892,11 +878,9 @@ async function loadChatMessages(telefone, quoteId) {
 
     if (!data || data.length === 0) {
       msgContainer.innerHTML = `
-        <div class="flex flex-col items-center justify-center h-full text-center text-[#8696a0] relative z-10">
-          <div class="w-16 h-16 bg-[#f0f2f5] rounded-full flex items-center justify-center mb-3 shadow-sm border border-black/5">
-            <i class="fa-regular fa-comments text-3xl opacity-60"></i>
-          </div>
-          <p class="text-sm font-medium">Nenhuma mensagem neste histórico.</p>
+        <div class="flex flex-col items-center justify-center h-full text-center text-slate-500">
+          <i class="fa-regular fa-comments text-3xl mb-2 opacity-50"></i>
+          <p class="text-xs">Nenhuma mensagem neste histórico.</p>
         </div>
       `;
       return;
@@ -908,14 +892,11 @@ async function loadChatMessages(telefone, quoteId) {
       const timeStr = new Date(msg.criado_em).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
       
       const div = document.createElement('div');
-      div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease] relative z-10`;
+      div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'}`;
       div.innerHTML = `
-        <div class="max-w-[85%] sm:max-w-[75%] px-2.5 py-1.5 sm:px-4 sm:py-2 text-[13.5px] sm:text-[15px] shadow-sm ${isOut ? 'bg-[#d9fdd3] text-[#111b21] rounded-2xl rounded-tr-sm' : 'bg-white text-[#111b21] rounded-2xl rounded-tl-sm'}">
-          <p class="whitespace-pre-wrap break-words leading-[1.35]">${msg.mensagem}</p>
-          <span class="text-[10px] sm:text-[11px] flex justify-end items-center mt-0.5 sm:mt-1 text-[#667781] font-medium tracking-tight">
-            ${timeStr}
-            ${isOut ? '<i class="fa-solid fa-check-double ml-1 text-[#53bdeb]"></i>' : ''}
-          </span>
+        <div class="max-w-[80%] rounded-2xl px-4 py-2 text-sm ${isOut ? 'bg-emerald-600 text-white rounded-br-sm' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-bl-sm'}">
+          <p class="whitespace-pre-wrap">${msg.mensagem}</p>
+          <span class="text-[9px] block text-right mt-1 ${isOut ? 'text-emerald-200' : 'text-slate-500'}">${timeStr}</span>
         </div>
       `;
       msgContainer.appendChild(div);
@@ -926,7 +907,7 @@ async function loadChatMessages(telefone, quoteId) {
 
   } catch (error) {
     console.error(error);
-    msgContainer.innerHTML = `<div class="text-rose-400 text-center text-sm p-4 relative z-10">Erro ao carregar mensagens.</div>`;
+    msgContainer.innerHTML = `<div class="text-rose-400 text-center text-sm p-4">Erro ao carregar mensagens.</div>`;
   }
 }
 
@@ -937,14 +918,13 @@ async function sendChatMessage(e) {
   const quoteId = document.getElementById('chatQuoteId').value;
   const telefone = document.getElementById('chatPhone').value;
   const btn = document.getElementById('chatSendBtn');
-  const visualBtn = document.getElementById('chatVisualSendBtn');
   
   const mensagem = input.value.trim();
   if (!mensagem) return;
   
   input.disabled = true;
   btn.disabled = true;
-  if(visualBtn) visualBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin text-lg sm:text-xl"></i>';
+  btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
   
   try {
     const { data, error } = await supabaseClient.functions.invoke('send-whatsapp', {
@@ -958,7 +938,6 @@ async function sendChatMessage(e) {
     if (error) throw error;
     
     input.value = '';
-    input.style.height = ''; // reseta a altura da textarea
     loadChatMessages(telefone, quoteId);
   } catch (error) {
     console.error(error);
@@ -966,7 +945,7 @@ async function sendChatMessage(e) {
   } finally {
     input.disabled = false;
     btn.disabled = false;
-    if(visualBtn) visualBtn.innerHTML = '<i class="fa-solid fa-paper-plane text-lg sm:text-xl ml-0.5"></i>';
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
     input.focus();
   }
 }

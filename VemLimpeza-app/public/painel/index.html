@@ -434,17 +434,23 @@
   <div id="chatModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-obsidian/85 backdrop-blur-sm">
     <div class="glass w-full max-w-2xl h-[80vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl relative animate-[scaleUp_0.3s_ease]">
       <!-- Header - Estilo Cinematográfico -->
-      <div class="flex items-center justify-between p-5 border-b border-cyan-500/10" style="background: linear-gradient(135deg, rgba(6,78,96,0.45) 0%, rgba(14,40,58,0.6) 50%, rgba(17,24,39,0.8) 100%); box-shadow: inset 0 -1px 20px rgba(0,210,211,0.05);">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, rgba(0,210,211,0.2), rgba(56,189,248,0.15)); box-shadow: 0 0 12px rgba(0,210,211,0.15);">
-            <i class="fa-brands fa-whatsapp text-xl" style="color: #00d2d3;"></i>
+      <div class="flex items-center justify-between p-5 border-b border-blue-500/20 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(30, 64, 175, 0.65) 0%, rgba(15, 23, 42, 0.85) 60%, rgba(9, 13, 22, 0.95) 100%); box-shadow: inset 0 -1px 25px rgba(59, 130, 246, 0.15);">
+        <!-- Elementos gráficos de fundo sutilmente visíveis -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.06] flex items-center justify-between px-16 text-blue-300">
+          <i class="fa-solid fa-couch text-5xl transform -rotate-12"></i>
+          <i class="fa-solid fa-calendar-days text-5xl transform rotate-12"></i>
+          <i class="fa-solid fa-clock text-5xl transform -rotate-6"></i>
+        </div>
+        <div class="flex items-center space-x-3 relative z-10">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, rgba(59,130,246,0.3), rgba(37,99,235,0.15)); box-shadow: 0 0 15px rgba(59,130,246,0.3);">
+            <i class="fa-brands fa-whatsapp text-xl" style="color: #60a5fa;"></i>
           </div>
           <div>
             <h3 class="text-base font-title font-bold text-white" id="chatClientName">Cliente</h3>
-            <p class="text-xs font-mono" id="chatClientPhone" style="color: rgba(0,210,211,0.75);">+244...</p>
+            <p class="text-xs font-mono" id="chatClientPhone" style="color: rgba(96,165,250,0.85);">+244...</p>
           </div>
         </div>
-        <button onclick="closeChatModal()" class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10">
+        <button onclick="closeChatModal()" class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 relative z-10">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>

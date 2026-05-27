@@ -434,21 +434,21 @@
   <div id="chatModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-obsidian/85 backdrop-blur-sm">
     <div class="glass w-full max-w-2xl h-[80vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl relative animate-[scaleUp_0.3s_ease]">
       <!-- Header -->
-      <div class="flex items-center justify-between p-5 border-b border-cyan-500/20 bg-gradient-to-r from-teal-950/95 via-cyan-950/70 to-obsidian/90 relative overflow-hidden shadow-[inset_0_-1px_0_0_rgba(20,184,166,0.1)]">
+      <div class="flex items-center justify-between p-5 border-b border-cyan-500/30 bg-gradient-to-r from-teal-950 via-cyan-900/80 to-obsidian/95 relative overflow-hidden shadow-[0_4px_20px_rgba(20,184,166,0.15)]">
         <!-- Watermark Background Icons (Cinematic Style) -->
-        <div class="absolute right-16 top-1/2 -translate-y-1/2 flex space-x-5 text-2xl text-cyan-400/10 pointer-events-none select-none">
-          <i class="fa-solid fa-couch"></i>
-          <i class="fa-solid fa-calendar-days"></i>
-          <i class="fa-solid fa-clock"></i>
+        <div class="absolute right-20 top-1/2 -translate-y-1/2 flex space-x-6 text-3xl sm:text-4xl text-cyan-400/30 pointer-events-none select-none z-0">
+          <i class="fa-solid fa-couch -rotate-12"></i>
+          <i class="fa-solid fa-calendar-days rotate-6"></i>
+          <i class="fa-solid fa-clock -rotate-6"></i>
         </div>
         
         <div class="flex items-center space-x-3 relative z-10">
-          <div class="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-            <i class="fa-brands fa-whatsapp text-cyan-400 text-xl"></i>
+          <div class="w-10 h-10 rounded-full bg-cyan-950/80 border border-cyan-400/50 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+            <i class="fa-brands fa-whatsapp text-cyan-300 text-xl"></i>
           </div>
           <div>
             <h3 class="text-base font-title font-bold text-white tracking-wide" id="chatClientName">Cliente</h3>
-            <p class="text-xs text-cyan-400/80 font-mono" id="chatClientPhone">+244...</p>
+            <p class="text-xs text-cyan-300 font-mono" id="chatClientPhone">+244...</p>
           </div>
         </div>
         <button onclick="closeChatModal()" class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 relative z-10">

@@ -499,19 +499,19 @@ function renderQuotes() {
           <label class="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Inserir Valor e Enviar</label>
           <div class="flex space-x-2">
             <div class="relative flex-1">
-              <span class="absolute left-3.5 top-2.5 text-xs font-semibold text-slate-400">Kz</span>
-              <input type="text" id="val-input-${quote.rowIndex}" placeholder="0,00" value="${quote.valor || ''}" class="w-full pl-9 pr-3 py-2 text-xs rounded-xl glass-input text-white">
+              <span class="absolute left-3.5 top-3.5 text-sm font-semibold text-slate-400">Kz</span>
+              <input type="text" id="val-input-${quote.rowIndex}" placeholder="0,00" value="${quote.valor || ''}" class="w-full pl-9 pr-3 py-3 text-sm rounded-xl glass-input text-white min-h-[48px]">
             </div>
-            <button onclick="sendQuote('${quote.rowIndex}')" id="btn-send-${quote.rowIndex}" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs flex items-center justify-center transition" title="Enviar E-mail">
-              <i class="fa-solid fa-envelope"></i>
+            <button onclick="sendQuote('${quote.rowIndex}')" id="btn-send-${quote.rowIndex}" class="px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-sm flex items-center justify-center transition min-h-[48px] min-w-[48px]" title="Enviar E-mail">
+              <i class="fa-solid fa-envelope text-base"></i>
             </button>
-            <button onclick="sendWhatsApp('${quote.rowIndex}')" id="btn-wa-${quote.rowIndex}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs flex items-center space-x-1.5 transition shadow-lg shadow-emerald-600/20" title="Enviar WhatsApp">
-              <i class="fa-brands fa-whatsapp text-sm"></i>
+            <button onclick="sendWhatsApp('${quote.rowIndex}')" id="btn-wa-${quote.rowIndex}" class="px-4 sm:px-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-emerald-600/20 min-h-[48px]" title="Enviar WhatsApp">
+              <i class="fa-brands fa-whatsapp text-lg"></i>
               <span class="hidden sm:inline">WhatsApp</span>
             </button>
-            <button onclick="openChatModal('${quote.rowIndex}')" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-xs flex items-center justify-center transition relative" title="Abrir Chat do WhatsApp">
-              <i class="fa-regular fa-comments"></i>
-              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>` : ''}
+            <button onclick="openChatModal('${quote.rowIndex}')" class="px-4 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold text-sm flex items-center justify-center transition relative min-h-[48px] min-w-[48px]" title="Abrir Chat do WhatsApp">
+              <i class="fa-regular fa-comments text-base"></i>
+              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span></span>` : ''}
             </button>
           </div>
         </div>
@@ -519,28 +519,28 @@ function renderQuotes() {
     } else {
       let deleteBtnHtml = '';
       if (isOlderThan24h) {
-        deleteBtnHtml = `<button onclick="deleteQuoteAction('${quote.rowIndex}')" class="px-3 py-1.5 rounded-lg border border-rose-500/20 hover:bg-rose-500/10 text-rose-400 transition text-[10px] font-bold flex items-center ml-2" title="Eliminar orçamento (possível após 24h)">
-          <i class="fa-solid fa-trash-can"></i>
+        deleteBtnHtml = `<button onclick="deleteQuoteAction('${quote.rowIndex}')" class="px-4 py-3 sm:py-2.5 rounded-xl border border-rose-500/20 hover:bg-rose-500/10 text-rose-400 transition text-xs font-bold flex items-center justify-center min-h-[48px] min-w-[48px] ml-0 sm:ml-2" title="Eliminar orçamento (possível após 24h)">
+          <i class="fa-solid fa-trash-can text-base"></i>
         </button>`;
       } else {
-        deleteBtnHtml = `<button onclick="showToast('warning', 'Apenas orçamentos com mais de 24 horas de existência podem ser eliminados.')" class="px-3 py-1.5 rounded-lg border border-white/5 bg-white/2 text-slate-500 cursor-not-allowed transition text-[10px] font-bold flex items-center ml-2" title="Disponível após 24 horas">
-          <i class="fa-solid fa-trash-can"></i>
+        deleteBtnHtml = `<button onclick="showToast('warning', 'Apenas orçamentos com mais de 24 horas de existência podem ser eliminados.')" class="px-4 py-3 sm:py-2.5 rounded-xl border border-white/5 bg-white/2 text-slate-500 cursor-not-allowed transition text-xs font-bold flex items-center justify-center min-h-[48px] min-w-[48px] ml-0 sm:ml-2" title="Disponível após 24 horas">
+          <i class="fa-solid fa-trash-can text-base"></i>
         </button>`;
       }
 
       footerAction = `
-        <div class="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
+        <div class="mt-5 pt-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span class="block text-[9px] uppercase font-bold text-slate-500 tracking-wider">Valor Enviado</span>
-            <span class="text-lg font-bold font-title text-white">Kz ${quote.valor || '0,00'}</span>
+            <span class="block text-[10px] uppercase font-bold text-slate-500 tracking-wider">Valor Enviado</span>
+            <span class="text-2xl font-bold font-title text-white">Kz ${quote.valor || '0,00'}</span>
           </div>
-          <div class="flex items-center space-x-2">
-            <button onclick="openChatModal('${quote.rowIndex}')" class="px-3 py-1.5 rounded-lg border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-400 transition text-[10px] font-bold flex items-center relative" title="Abrir Chat do WhatsApp">
-              <i class="fa-brands fa-whatsapp mr-1 text-sm"></i> Chat
-              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>` : ''}
+          <div class="flex items-center space-x-2 w-full sm:w-auto">
+            <button onclick="openChatModal('${quote.rowIndex}')" class="flex-1 sm:flex-none justify-center px-4 py-3 sm:py-2.5 rounded-xl border border-emerald-500/20 hover:bg-emerald-500/10 text-emerald-400 transition text-xs sm:text-sm font-bold flex items-center relative min-h-[48px]" title="Abrir Chat do WhatsApp">
+              <i class="fa-brands fa-whatsapp mr-2 text-base"></i> Chat
+              ${quote.hasUnreadMsg ? `<span class="absolute -top-1 -right-1 flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span></span>` : ''}
             </button>
-            <button onclick="resendPrompt('${quote.rowIndex}', '${quote.valor}')" class="px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-[10px] font-bold">
-              <i class="fa-solid fa-rotate-right mr-1"></i> Reenviar
+            <button onclick="resendPrompt('${quote.rowIndex}', '${quote.valor}')" class="flex-1 sm:flex-none justify-center px-4 py-3 sm:py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-slate-400 hover:text-white transition text-xs sm:text-sm font-bold min-h-[48px] flex items-center">
+              <i class="fa-solid fa-rotate-right mr-2 text-base"></i> <span class="sm:inline">Reenviar</span>
             </button>
             ${deleteBtnHtml}
           </div>
@@ -676,9 +676,9 @@ function setFilter(filter) {
   ['all', 'pending', 'sent', 'error'].forEach(f => {
     const btn = document.getElementById(`filterBtn-${f}`);
     if (f === filter) {
-      btn.className = "px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 bg-neonpurple text-white";
+      btn.className = "px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 bg-neonpurple text-white whitespace-nowrap min-h-[44px]";
     } else {
-      btn.className = "px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white";
+      btn.className = "px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]";
     }
   });
   renderQuotes();

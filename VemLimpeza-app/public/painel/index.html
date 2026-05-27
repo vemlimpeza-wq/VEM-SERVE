@@ -87,6 +87,13 @@
     ::-webkit-scrollbar-thumb:hover {
       background: rgba(139, 92, 246, 0.6);
     }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
 <body class="min-h-screen pb-12 font-sans selection:bg-neonpurple selection:text-white">
@@ -157,21 +164,21 @@
     <!-- CONTROL BAR -->
     <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
       <!-- Filtros -->
-      <div class="flex p-1 rounded-xl glass max-w-max">
-        <button onclick="setFilter('all')" id="filterBtn-all" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 bg-neonpurple text-white">Todos</button>
-        <button onclick="setFilter('pending')" id="filterBtn-pending" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Pendentes</button>
-        <button onclick="setFilter('sent')" id="filterBtn-sent" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Enviados</button>
-        <button onclick="setFilter('error')" id="filterBtn-error" class="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white">Erros</button>
+      <div class="flex p-1.5 rounded-2xl glass w-full sm:w-auto overflow-x-auto hide-scrollbar space-x-1">
+        <button onclick="setFilter('all')" id="filterBtn-all" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 bg-neonpurple text-white whitespace-nowrap min-h-[44px]">Todos</button>
+        <button onclick="setFilter('pending')" id="filterBtn-pending" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]">Pendentes</button>
+        <button onclick="setFilter('sent')" id="filterBtn-sent" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]">Enviados</button>
+        <button onclick="setFilter('error')" id="filterBtn-error" class="px-5 py-3 sm:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white whitespace-nowrap min-h-[44px]">Erros</button>
       </div>
 
       <!-- Ações -->
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
         <span id="lastSyncTime" class="text-[10px] text-slate-500 font-mono hidden sm:inline"></span>
-        <button onclick="cleanOldQuotes()" id="btnCleanOld" class="px-5 py-2.5 rounded-xl glass hover:bg-rose-500/10 hover:border-rose-500/30 transition flex items-center space-x-2 text-sm font-semibold text-rose-400 border border-rose-500/20">
+        <button onclick="cleanOldQuotes()" id="btnCleanOld" class="flex-1 sm:flex-none justify-center px-5 py-3 sm:py-2.5 rounded-xl glass hover:bg-rose-500/10 hover:border-rose-500/30 transition flex items-center space-x-2 text-sm font-bold text-rose-400 border border-rose-500/20 min-h-[44px]">
           <i class="fa-solid fa-trash-can"></i>
           <span class="hidden sm:inline">Limpar Antigos</span>
         </button>
-        <button onclick="fetchData(false)" class="px-5 py-2.5 rounded-xl glass hover:bg-white/5 transition flex items-center space-x-2 text-sm font-semibold">
+        <button onclick="fetchData(false)" class="flex-1 sm:flex-none justify-center px-5 py-3 sm:py-2.5 rounded-xl glass hover:bg-white/5 transition flex items-center space-x-2 text-sm font-bold min-h-[44px]">
           <i class="fa-solid fa-rotate"></i>
           <span>Atualizar</span>
         </button>

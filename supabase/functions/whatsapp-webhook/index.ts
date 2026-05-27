@@ -5,7 +5,7 @@ const WHATSAPP_VERIFY_TOKEN = Deno.env.get("WHATSAPP_VERIFY_TOKEN") || "vemlimpe
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
 
-serve(async (req) => {
+serve(async (req: Request) => {
   const url = new URL(req.url)
 
   // Webhook Verification (GET)

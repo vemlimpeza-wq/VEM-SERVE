@@ -281,8 +281,8 @@
   </div>
 
   <!-- WHATSAPP CHAT MODAL -->
-  <div id="chatModal" class="fixed inset-0 z-50 hidden items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-all">
-    <div class="w-full max-w-3xl h-full sm:h-[90vh] flex flex-col rounded-none sm:rounded-2xl overflow-hidden shadow-2xl relative animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease] bg-[#efeae2]">
+  <div id="chatModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-all">
+    <div class="w-full max-w-3xl h-[100dvh] sm:h-[90vh] flex flex-col rounded-none sm:rounded-2xl overflow-hidden shadow-2xl relative animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease] bg-white">
       <!-- Header -->
       <div class="flex items-center justify-between px-3 py-2.5 sm:px-5 sm:py-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 shadow-lg z-10 relative overflow-hidden">
         <!-- Overlay sutil de brilho -->
@@ -313,7 +313,7 @@
       </div>
       
       <!-- Messages Area -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3 bg-gradient-to-b from-slate-50 via-teal-50/40 to-cyan-50/30 flex flex-col relative scroll-smooth before:absolute before:inset-0 before:bg-[url('https://i.ibb.co/3YxHjB8/wa-bg.png')] before:opacity-5 before:mix-blend-multiply before:bg-auto before:bg-repeat before:-z-0 z-0">
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3 flex flex-col relative scroll-smooth bg-[url('./assets/chat-bg.png')] bg-cover bg-center bg-fixed z-0">
         <!-- Loader inicial -->
         <div class="flex items-center justify-center h-full relative z-10">
           <div class="w-10 h-10 border-4 border-teal-500/30 border-t-teal-500 rounded-full animate-spin"></div>

@@ -281,11 +281,12 @@
   </div>
 
   <!-- WHATSAPP CHAT MODAL -->
-  <div id="chatModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-all">
-    <div class="w-full max-w-3xl h-full sm:h-[90vh] flex flex-col rounded-none sm:rounded-2xl overflow-hidden shadow-2xl relative animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease] bg-[#e5ddd5]">
+  <div id="chatModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm transition-all" style="height:100%;height:100dvh;">
+    <!-- No mobile: tela cheia sem margem. No desktop: centralizado com margem -->
+    <div class="absolute inset-0 sm:relative sm:inset-auto sm:m-auto sm:top-[5vh] sm:max-w-3xl sm:w-full sm:h-[90vh] sm:rounded-2xl flex flex-col overflow-hidden shadow-2xl bg-[#e5ddd5] animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease]">
       <!-- Header -->
-      <div class="flex items-center justify-between px-2 py-2 sm:px-4 sm:py-3 bg-[#008069] shadow-sm z-10 relative pt-[max(8px,env(safe-area-inset-top))]">
-        <div class="flex items-center space-x-2 sm:space-x-3 relative z-10 min-w-0">
+      <div class="flex items-center justify-between px-2 py-2 sm:px-4 sm:py-3 bg-[#008069] z-10 flex-shrink-0" style="padding-top:max(8px,env(safe-area-inset-top));">
+        <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
           <button onclick="closeChatModal()" class="sm:hidden text-white/90 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full active:bg-white/10 -ml-1 flex-shrink-0">
             <i class="fa-solid fa-arrow-left text-[18px]"></i>
           </button>
@@ -297,7 +298,7 @@
             <p class="text-[11px] sm:text-[13px] text-white/80 font-normal truncate" id="chatClientPhone">+244...</p>
           </div>
         </div>
-        <div class="flex space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
+        <div class="flex space-x-1 sm:space-x-2 flex-shrink-0">
           <button class="text-white hover:bg-white/10 transition w-10 h-10 flex items-center justify-center rounded-full hidden sm:flex">
             <i class="fa-solid fa-video text-lg"></i>
           </button>
@@ -310,11 +311,11 @@
         </div>
       </div>
       
-      <!-- Messages Area -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3 flex flex-col relative scroll-smooth z-0">
-        <!-- Camada de Fundo (Padrão Multiplicado e Mais Visível) -->
-        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[url('./assets/chat-bg-tile.png')] bg-[length:95px_95px] sm:bg-[length:130px_130px] bg-repeat opacity-100 filter contrast-[1.6] saturate-150 brightness-[0.88]"></div>
-        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[#e5ddd5]/30 mix-blend-multiply"></div>
+      <!-- Messages Area - flex-1 + min-h-0 garante que nunca ultrapassa o espaço disponível -->
+      <div id="chatMessages" class="flex-1 min-h-0 overflow-y-auto p-3 sm:p-5 space-y-3 flex flex-col relative scroll-smooth z-0">
+        <!-- Camada de Fundo -->
+        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[url('./assets/chat-bg-tile.png')] bg-[length:95px_95px] sm:bg-[length:130px_130px] bg-repeat opacity-100" style="filter:contrast(1.6) saturate(1.5) brightness(0.88);"></div>
+        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[#e5ddd5]/30" style="mix-blend-mode:multiply;"></div>
         
         <!-- Loader inicial -->
         <div class="flex items-center justify-center h-full relative z-10">
@@ -322,8 +323,8 @@
         </div>
       </div>
       
-      <!-- Input Area -->
-      <div class="p-2 sm:p-3 bg-[#f0f2f5] z-10 flex items-end space-x-1.5 sm:space-x-2 pb-[max(8px,env(safe-area-inset-bottom))]">
+      <!-- Input Area - flex-shrink-0 garante que nunca é esmagado -->
+      <div class="flex-shrink-0 p-2 sm:p-3 bg-[#f0f2f5] z-10 flex items-end space-x-1.5 sm:space-x-2" style="padding-bottom:max(8px,env(safe-area-inset-bottom));">
         <div class="flex items-end space-x-1 sm:space-x-2 flex-1 bg-white rounded-3xl sm:rounded-[24px] px-2 sm:px-3 py-1 sm:py-1.5 shadow-sm min-h-[40px] sm:min-h-[50px]">
           <button class="text-[#8696a0] hover:text-[#54656f] p-1.5 sm:p-2 flex-shrink-0 transition-colors">
             <i class="fa-regular fa-face-smile text-[19px] sm:text-2xl"></i>
@@ -338,7 +339,7 @@
             <button type="submit" id="chatSendBtn" class="hidden"></button>
           </form>
         </div>
-        <button onclick="document.getElementById('chatSendBtn').click()" class="min-h-[40px] min-w-[40px] sm:min-h-[50px] sm:min-w-[50px] rounded-full bg-[#00a884] hover:bg-[#008f6f] text-white flex items-center justify-center flex-shrink-0 transition-colors shadow-sm mb-0 sm:mb-0" id="chatVisualSendBtn">
+        <button onclick="document.getElementById('chatSendBtn').click()" class="min-h-[40px] min-w-[40px] sm:min-h-[50px] sm:min-w-[50px] rounded-full bg-[#00a884] hover:bg-[#008f6f] text-white flex items-center justify-center flex-shrink-0 transition-colors shadow-sm" id="chatVisualSendBtn">
           <i class="fa-solid fa-paper-plane text-[17px] sm:text-xl ml-0.5"></i>
         </button>
       </div>

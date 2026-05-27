@@ -850,15 +850,31 @@ function openChatModal(rowIndex) {
   document.getElementById('chatQuoteId').value = quote.id;
   document.getElementById('chatPhone').value = telefone;
   
-  document.getElementById('chatModal').classList.remove('hidden');
-  document.getElementById('chatModal').classList.add('flex');
+  const modal = document.getElementById('chatModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  
+  // Bloquear scroll do body para o chat não ficar por baixo do conteúdo
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+  document.body.style.top = `-${window.scrollY}px`;
   
   loadChatMessages(telefone, quote.id);
 }
 
 function closeChatModal() {
-  document.getElementById('chatModal').classList.add('hidden');
-  document.getElementById('chatModal').classList.remove('flex');
+  const modal = document.getElementById('chatModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  
+  // Restaurar scroll do body
+  const scrollY = document.body.style.top;
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
+  document.body.style.top = '';
+  window.scrollTo(0, parseInt(scrollY || '0') * -1);
 }
 
 async function loadChatMessages(telefone, quoteId) {

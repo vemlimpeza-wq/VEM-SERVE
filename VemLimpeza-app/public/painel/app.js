@@ -863,7 +863,7 @@ function closeChatModal() {
 
 async function loadChatMessages(telefone, quoteId) {
   const msgContainer = document.getElementById('chatMessages');
-  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full relative z-10"><div class="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div></div>`;
+  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full relative z-10"><div class="w-10 h-10 border-4 border-teal-500/30 border-t-teal-400 rounded-full animate-spin"></div></div>`;
   
   try {
     const { data, error } = await supabaseClient
@@ -876,8 +876,8 @@ async function loadChatMessages(telefone, quoteId) {
 
     if (!data || data.length === 0) {
       msgContainer.innerHTML = `
-        <div class="flex flex-col items-center justify-center h-full text-center text-teal-700/50 relative z-10">
-          <div class="w-16 h-16 bg-white/50 rounded-full flex items-center justify-center mb-3 shadow-inner border border-white/40">
+        <div class="flex flex-col items-center justify-center h-full text-center text-teal-200/40 relative z-10">
+          <div class="w-16 h-16 bg-[#0a1e27]/50 rounded-full flex items-center justify-center mb-3 shadow-inner border border-white/5">
             <i class="fa-regular fa-comments text-3xl opacity-60"></i>
           </div>
           <p class="text-sm font-medium">Nenhuma mensagem neste histórico.</p>
@@ -894,11 +894,11 @@ async function loadChatMessages(telefone, quoteId) {
       const div = document.createElement('div');
       div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease] relative z-10`;
       div.innerHTML = `
-        <div class="max-w-[85%] sm:max-w-[75%] px-4 py-3 text-[15px] shadow-md ${isOut ? 'bg-gradient-to-br from-cyan-500 to-teal-500 text-white rounded-2xl rounded-tr-sm shadow-cyan-500/20' : 'bg-[#fefce8] text-[#713f12] border border-[#fde047]/40 rounded-2xl rounded-tl-sm shadow-amber-900/5'}">
+        <div class="max-w-[85%] sm:max-w-[75%] px-4 py-3 text-[15px] shadow-lg ${isOut ? 'bg-[#0f766e] text-[#f0fdf4] border border-teal-500/30 rounded-2xl rounded-tr-sm shadow-teal-900/40' : 'bg-[#fef3c7] text-[#78350f] border border-amber-200/50 rounded-2xl rounded-tl-sm shadow-black/20'}">
           <p class="whitespace-pre-wrap leading-relaxed">${msg.mensagem}</p>
-          <span class="text-[10px] flex justify-end items-center mt-1.5 ${isOut ? 'text-cyan-100' : 'text-[#a16207]'} font-semibold tracking-wide">
+          <span class="text-[10px] flex justify-end items-center mt-1.5 ${isOut ? 'text-teal-200/80' : 'text-[#92400e]/80'} font-semibold tracking-wide">
             ${timeStr}
-            ${isOut ? '<i class="fa-solid fa-check-double ml-1.5 opacity-90"></i>' : ''}
+            ${isOut ? '<i class="fa-solid fa-check-double ml-1.5 opacity-80"></i>' : ''}
           </span>
         </div>
       `;

@@ -894,11 +894,11 @@ async function loadChatMessages(telefone, quoteId) {
       const div = document.createElement('div');
       div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease] relative z-10`;
       div.innerHTML = `
-        <div class="max-w-[85%] sm:max-w-[75%] px-3.5 py-2 sm:px-5 sm:py-2.5 text-[14px] sm:text-[15px] shadow-md backdrop-blur-sm ${isOut ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl rounded-tr-sm shadow-teal-500/20' : 'bg-gradient-to-br from-white to-slate-50 text-slate-800 rounded-2xl rounded-tl-sm border border-slate-100'}">
-          <p class="whitespace-pre-wrap break-words leading-[1.5] ${isOut ? 'drop-shadow-sm' : ''}">${msg.mensagem}</p>
-          <span class="text-[10px] sm:text-[11px] flex justify-end items-center mt-1.5 ${isOut ? 'text-teal-100' : 'text-slate-400'} font-medium tracking-tight">
+        <div class="max-w-[85%] sm:max-w-[75%] px-3 py-1.5 sm:px-4 sm:py-2 text-[14px] sm:text-[15px] shadow-sm ${isOut ? 'bg-[#d9fdd3] text-[#111b21] rounded-2xl rounded-tr-sm' : 'bg-white text-[#111b21] rounded-2xl rounded-tl-sm'}">
+          <p class="whitespace-pre-wrap break-words leading-[1.4]">${msg.mensagem}</p>
+          <span class="text-[11px] flex justify-end items-center mt-1 text-[#667781] font-medium tracking-tight">
             ${timeStr}
-            ${isOut ? '<i class="fa-solid fa-check-double ml-1 opacity-90 drop-shadow-sm"></i>' : ''}
+            ${isOut ? '<i class="fa-solid fa-check-double ml-1 text-[#53bdeb]"></i>' : ''}
           </span>
         </div>
       `;

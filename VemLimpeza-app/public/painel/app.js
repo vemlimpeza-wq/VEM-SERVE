@@ -894,9 +894,9 @@ async function loadChatMessages(telefone, quoteId) {
       const div = document.createElement('div');
       div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'}`;
       div.innerHTML = `
-        <div class="max-w-[80%] rounded-2xl px-4 py-2 text-sm ${isOut ? 'bg-emerald-600 text-white rounded-br-sm' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-bl-sm'}">
-          <p class="whitespace-pre-wrap">${msg.mensagem}</p>
-          <span class="text-[9px] block text-right mt-1 ${isOut ? 'text-emerald-200' : 'text-slate-500'}">${timeStr}</span>
+        <div class="max-w-[80%] rounded-2xl px-4 py-3 text-sm ${isOut ? 'bg-[#10b981] text-white rounded-br-sm shadow-sm' : 'bg-[#1f2937] text-white rounded-bl-sm shadow-sm'}">
+          <p class="whitespace-pre-wrap leading-relaxed">${msg.mensagem}</p>
+          <span class="text-[9px] block text-right mt-1 ${isOut ? 'text-white/80' : 'text-slate-400'} font-medium">${timeStr}</span>
         </div>
       `;
       msgContainer.appendChild(div);

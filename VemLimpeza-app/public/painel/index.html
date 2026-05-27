@@ -434,21 +434,20 @@
   <div id="chatModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-obsidian/85 backdrop-blur-sm">
     <div class="glass w-full max-w-2xl h-[80vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl relative animate-[scaleUp_0.3s_ease]">
       <!-- Header -->
-      <div class="flex items-center justify-between p-5 border-b border-cyan-500/30 bg-gradient-to-r from-teal-950 via-cyan-900/80 to-obsidian/95 relative overflow-hidden shadow-[0_4px_20px_rgba(20,184,166,0.15)]">
-        <!-- Watermark Background Icons (Cinematic Style) -->
-        <div class="absolute right-20 top-1/2 -translate-y-1/2 flex space-x-6 text-3xl sm:text-4xl text-cyan-400/30 pointer-events-none select-none z-0">
-          <i class="fa-solid fa-couch -rotate-12"></i>
-          <i class="fa-solid fa-calendar-days rotate-6"></i>
-          <i class="fa-solid fa-clock -rotate-6"></i>
+      <div class="flex items-center justify-between p-5 border-b border-white/5 bg-[#131b2f] relative overflow-hidden">
+        <!-- Watermark Background Icons -->
+        <div class="absolute right-16 top-1/2 -translate-y-1/2 flex space-x-6 text-4xl text-white/[0.03] pointer-events-none select-none z-0">
+          <i class="fa-solid fa-calendar-days"></i>
+          <i class="fa-solid fa-clock"></i>
         </div>
         
         <div class="flex items-center space-x-3 relative z-10">
-          <div class="w-10 h-10 rounded-full bg-cyan-950/80 border border-cyan-400/50 flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.4)]">
-            <i class="fa-brands fa-whatsapp text-cyan-300 text-xl"></i>
+          <div class="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center">
+            <i class="fa-brands fa-whatsapp text-blue-400 text-xl"></i>
           </div>
           <div>
             <h3 class="text-base font-title font-bold text-white tracking-wide" id="chatClientName">Cliente</h3>
-            <p class="text-xs text-cyan-300 font-mono" id="chatClientPhone">+244...</p>
+            <p class="text-xs text-blue-400 font-mono font-semibold" id="chatClientPhone">+244...</p>
           </div>
         </div>
         <button onclick="closeChatModal()" class="text-slate-400 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 relative z-10">
@@ -457,7 +456,7 @@
       </div>
       
       <!-- Messages Area -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-4 bg-obsidian/30 flex flex-col">
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-4 bg-[#0b1121] flex flex-col">
         <!-- Loader inicial -->
         <div class="flex items-center justify-center h-full">
           <div class="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
@@ -465,12 +464,12 @@
       </div>
       
       <!-- Input Area -->
-      <div class="p-4 border-t border-white/5 bg-slate-900/50">
+      <div class="p-4 bg-[#131b2f]">
         <form id="chatForm" onsubmit="sendChatMessage(event)" class="flex space-x-2">
           <input type="hidden" id="chatQuoteId" value="">
           <input type="hidden" id="chatPhone" value="">
-          <input type="text" id="chatInputMsg" placeholder="Escreva uma mensagem..." class="flex-1 px-4 py-3 rounded-xl glass-input text-sm text-white" autocomplete="off" required>
-          <button type="submit" id="chatSendBtn" class="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition shadow-lg shadow-emerald-600/20 flex items-center justify-center w-12">
+          <input type="text" id="chatInputMsg" placeholder="Escreva uma mensagem..." class="flex-1 px-4 py-3 rounded-xl bg-[#1e293b] border border-white/5 focus:border-blue-500/50 focus:outline-none transition-colors text-sm text-white" autocomplete="off" required>
+          <button type="submit" id="chatSendBtn" class="px-5 py-3 rounded-xl bg-[#10b981] hover:bg-emerald-500 text-white font-bold transition flex items-center justify-center w-12">
             <i class="fa-solid fa-paper-plane"></i>
           </button>
         </form>

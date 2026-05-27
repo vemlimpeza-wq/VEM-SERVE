@@ -863,7 +863,7 @@ function closeChatModal() {
 
 async function loadChatMessages(telefone, quoteId) {
   const msgContainer = document.getElementById('chatMessages');
-  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full"><div class="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div></div>`;
+  msgContainer.innerHTML = `<div class="flex items-center justify-center h-full relative z-10"><div class="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div></div>`;
   
   try {
     const { data, error } = await supabaseClient
@@ -876,9 +876,11 @@ async function loadChatMessages(telefone, quoteId) {
 
     if (!data || data.length === 0) {
       msgContainer.innerHTML = `
-        <div class="flex flex-col items-center justify-center h-full text-center text-slate-500">
-          <i class="fa-regular fa-comments text-3xl mb-2 opacity-50"></i>
-          <p class="text-xs">Nenhuma mensagem neste histórico.</p>
+        <div class="flex flex-col items-center justify-center h-full text-center text-teal-700/50 relative z-10">
+          <div class="w-16 h-16 bg-white/50 rounded-full flex items-center justify-center mb-3 shadow-inner border border-white/40">
+            <i class="fa-regular fa-comments text-3xl opacity-60"></i>
+          </div>
+          <p class="text-sm font-medium">Nenhuma mensagem neste histórico.</p>
         </div>
       `;
       return;
@@ -890,13 +892,13 @@ async function loadChatMessages(telefone, quoteId) {
       const timeStr = new Date(msg.criado_em).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
       
       const div = document.createElement('div');
-      div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease]`;
+      div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease] relative z-10`;
       div.innerHTML = `
-        <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-[15px] shadow-md backdrop-blur-sm ${isOut ? 'bg-emerald-600 text-white rounded-br-sm shadow-emerald-600/20' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-bl-sm shadow-black/20'}">
+        <div class="max-w-[85%] sm:max-w-[75%] px-4 py-3 text-[15px] shadow-md ${isOut ? 'bg-gradient-to-br from-cyan-500 to-teal-500 text-white rounded-2xl rounded-tr-sm shadow-cyan-500/20' : 'bg-[#fefce8] text-[#713f12] border border-[#fde047]/40 rounded-2xl rounded-tl-sm shadow-amber-900/5'}">
           <p class="whitespace-pre-wrap leading-relaxed">${msg.mensagem}</p>
-          <span class="text-[10px] flex justify-end items-center mt-1.5 ${isOut ? 'text-emerald-200' : 'text-slate-400'} font-medium tracking-wide">
+          <span class="text-[10px] flex justify-end items-center mt-1.5 ${isOut ? 'text-cyan-100' : 'text-[#a16207]'} font-semibold tracking-wide">
             ${timeStr}
-            ${isOut ? '<i class="fa-solid fa-check-double ml-1.5 opacity-80"></i>' : ''}
+            ${isOut ? '<i class="fa-solid fa-check-double ml-1.5 opacity-90"></i>' : ''}
           </span>
         </div>
       `;
@@ -908,7 +910,7 @@ async function loadChatMessages(telefone, quoteId) {
 
   } catch (error) {
     console.error(error);
-    msgContainer.innerHTML = `<div class="text-rose-400 text-center text-sm p-4">Erro ao carregar mensagens.</div>`;
+    msgContainer.innerHTML = `<div class="text-rose-400 text-center text-sm p-4 relative z-10">Erro ao carregar mensagens.</div>`;
   }
 }
 

@@ -311,7 +311,11 @@
       </div>
       
       <!-- Messages Area -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3 flex flex-col relative scroll-smooth bg-[url('./assets/chat-bg-tile.png')] bg-[length:150px_150px] sm:bg-[length:200px_200px] bg-repeat z-0 before:absolute before:inset-0 before:bg-black/[0.04] before:pointer-events-none">
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3 flex flex-col relative scroll-smooth z-0">
+        <!-- Camada de Fundo (Padrão Multiplicado e Mais Visível) -->
+        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[url('./assets/chat-bg-tile.png')] bg-[length:95px_95px] sm:bg-[length:130px_130px] bg-repeat opacity-100 filter contrast-[1.6] saturate-150 brightness-[0.88]"></div>
+        <div class="absolute inset-0 z-[-1] pointer-events-none bg-[#e5ddd5]/30 mix-blend-multiply"></div>
+        
         <!-- Loader inicial -->
         <div class="flex items-center justify-center h-full relative z-10">
           <div class="w-10 h-10 border-4 border-[#00a884]/30 border-t-[#00a884] rounded-full animate-spin"></div>

@@ -284,58 +284,60 @@
   <div id="chatModal" class="fixed inset-0 z-50 hidden items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-all">
     <div class="w-full max-w-3xl h-full sm:h-[90vh] flex flex-col rounded-none sm:rounded-2xl overflow-hidden shadow-2xl relative animate-[slideUp_0.3s_ease] sm:animate-[scaleUp_0.3s_ease] bg-[#efeae2]">
       <!-- Header -->
-      <div class="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 bg-[#008069] shadow-sm z-10">
-        <div class="flex items-center space-x-3">
-          <button onclick="closeChatModal()" class="sm:hidden text-white/90 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full active:bg-white/10 -ml-1">
+      <div class="flex items-center justify-between px-3 py-2.5 sm:px-5 sm:py-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 shadow-lg z-10 relative overflow-hidden">
+        <!-- Overlay sutil de brilho -->
+        <div class="absolute inset-0 bg-white/5 mix-blend-overlay"></div>
+        <div class="flex items-center space-x-3 relative z-10 min-w-0">
+          <button onclick="closeChatModal()" class="sm:hidden text-white/90 hover:text-white transition w-8 h-8 flex items-center justify-center rounded-full active:bg-white/10 -ml-1 flex-shrink-0">
             <i class="fa-solid fa-arrow-left text-xl"></i>
           </button>
-          <div class="w-10 h-10 rounded-full bg-slate-300 flex items-center justify-center overflow-hidden flex-shrink-0">
-            <i class="fa-solid fa-user text-white text-xl mt-2"></i>
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 shadow-inner flex items-center justify-center overflow-hidden flex-shrink-0 backdrop-blur-sm border border-white/20">
+            <i class="fa-solid fa-user text-white text-xl mt-2 drop-shadow-sm"></i>
           </div>
-          <div class="flex flex-col overflow-hidden">
-            <h3 class="text-[16px] sm:text-lg font-semibold text-white leading-tight truncate" id="chatClientName">Cliente</h3>
-            <p class="text-[12px] sm:text-[13px] text-white/80 font-normal truncate" id="chatClientPhone">+244...</p>
+          <div class="flex flex-col overflow-hidden min-w-0">
+            <h3 class="text-[16px] sm:text-lg font-bold text-white leading-tight truncate drop-shadow-sm" id="chatClientName">Cliente</h3>
+            <p class="text-[12px] sm:text-[13px] text-teal-50 font-medium truncate drop-shadow-sm" id="chatClientPhone">+244...</p>
           </div>
         </div>
-        <div class="flex space-x-1 sm:space-x-2">
-          <button class="text-white hover:bg-white/10 transition w-10 h-10 flex items-center justify-center rounded-full hidden sm:flex">
-            <i class="fa-solid fa-video text-lg"></i>
+        <div class="flex space-x-1 sm:space-x-2 relative z-10 flex-shrink-0">
+          <button class="text-white hover:bg-white/20 transition w-10 h-10 flex items-center justify-center rounded-full hidden sm:flex backdrop-blur-sm">
+            <i class="fa-solid fa-video text-lg drop-shadow-sm"></i>
           </button>
-          <button class="text-white hover:bg-white/10 transition w-10 h-10 flex items-center justify-center rounded-full hidden sm:flex">
-            <i class="fa-solid fa-phone text-lg"></i>
+          <button class="text-white hover:bg-white/20 transition w-10 h-10 flex items-center justify-center rounded-full hidden sm:flex backdrop-blur-sm">
+            <i class="fa-solid fa-phone text-lg drop-shadow-sm"></i>
           </button>
-          <button onclick="closeChatModal()" class="hidden sm:flex text-white hover:bg-white/10 transition w-10 h-10 items-center justify-center rounded-full">
-            <i class="fa-solid fa-xmark text-xl"></i>
+          <button onclick="closeChatModal()" class="hidden sm:flex text-white hover:bg-white/20 transition w-10 h-10 items-center justify-center rounded-full backdrop-blur-sm">
+            <i class="fa-solid fa-xmark text-xl drop-shadow-sm"></i>
           </button>
         </div>
       </div>
       
       <!-- Messages Area -->
-      <div id="chatMessages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-2 bg-[#efeae2] flex flex-col relative scroll-smooth before:absolute before:inset-0 before:bg-[url('https://i.ibb.co/3YxHjB8/wa-bg.png')] before:opacity-[0.08] before:mix-blend-darken before:bg-auto before:bg-repeat before:-z-0 z-0">
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-3 sm:p-5 space-y-3 bg-gradient-to-b from-slate-50 via-teal-50/40 to-cyan-50/30 flex flex-col relative scroll-smooth before:absolute before:inset-0 before:bg-[url('https://i.ibb.co/3YxHjB8/wa-bg.png')] before:opacity-5 before:mix-blend-multiply before:bg-auto before:bg-repeat before:-z-0 z-0">
         <!-- Loader inicial -->
         <div class="flex items-center justify-center h-full relative z-10">
-          <div class="w-10 h-10 border-4 border-[#00a884]/30 border-t-[#00a884] rounded-full animate-spin"></div>
+          <div class="w-10 h-10 border-4 border-teal-500/30 border-t-teal-500 rounded-full animate-spin"></div>
         </div>
       </div>
       
       <!-- Input Area -->
-      <div class="p-2 sm:p-3 bg-[#f0f2f5] z-10 flex items-end space-x-2">
-        <div class="flex items-end space-x-2 flex-1 bg-white rounded-3xl sm:rounded-[24px] px-3 py-1 sm:py-1.5 shadow-sm min-h-[44px] sm:min-h-[50px]">
-          <button class="text-[#8696a0] hover:text-[#54656f] p-2 flex-shrink-0 transition-colors">
+      <div class="p-2 sm:p-4 bg-white/80 backdrop-blur-xl border-t border-slate-100/50 z-10 flex items-end space-x-2 sm:space-x-3 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+        <div class="flex items-end space-x-1 sm:space-x-2 flex-1 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-3xl sm:rounded-[28px] px-2 sm:px-4 py-1 sm:py-1.5 shadow-inner border border-slate-200/60 min-h-[44px] sm:min-h-[52px] transition-all focus-within:shadow-md focus-within:border-teal-200 focus-within:bg-white">
+          <button class="text-slate-400 hover:text-teal-500 p-2 flex-shrink-0 transition-colors">
             <i class="fa-regular fa-face-smile text-xl sm:text-2xl"></i>
           </button>
-          <button class="text-[#8696a0] hover:text-[#54656f] p-2 flex-shrink-0 transition-colors mr-1">
+          <button class="text-slate-400 hover:text-teal-500 p-2 flex-shrink-0 transition-colors mr-0.5">
             <i class="fa-solid fa-paperclip text-lg sm:text-xl"></i>
           </button>
           <form id="chatForm" onsubmit="sendChatMessage(event)" class="flex-1 flex items-end m-0">
             <input type="hidden" id="chatQuoteId" value="">
             <input type="hidden" id="chatPhone" value="">
-            <textarea id="chatInputMsg" rows="1" placeholder="Mensagem" class="w-full bg-transparent border-none text-[15px] sm:text-[16px] text-[#111b21] placeholder-[#8696a0] focus:ring-0 py-2 sm:py-2.5 resize-none max-h-28 min-h-[40px] leading-relaxed hide-scrollbar m-0 p-0 shadow-none outline-none" autocomplete="off" required oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(event); }"></textarea>
+            <textarea id="chatInputMsg" rows="1" placeholder="Escreva uma mensagem..." class="w-full bg-transparent border-none text-[15px] sm:text-[16px] text-slate-800 placeholder-slate-400 focus:ring-0 py-2 sm:py-2.5 resize-none max-h-32 min-h-[40px] leading-relaxed hide-scrollbar m-0 p-0 shadow-none outline-none" autocomplete="off" required oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(event); }"></textarea>
             <button type="submit" id="chatSendBtn" class="hidden"></button>
           </form>
         </div>
-        <button onclick="document.getElementById('chatSendBtn').click()" class="min-h-[44px] min-w-[44px] sm:min-h-[50px] sm:min-w-[50px] rounded-full bg-[#00a884] hover:bg-[#008f6f] text-white flex items-center justify-center flex-shrink-0 transition-colors shadow-sm mb-0.5 sm:mb-0" id="chatVisualSendBtn">
-          <i class="fa-solid fa-paper-plane text-lg sm:text-xl ml-0.5"></i>
+        <button onclick="document.getElementById('chatSendBtn').click()" class="min-h-[44px] min-w-[44px] sm:min-h-[52px] sm:min-w-[52px] rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white flex items-center justify-center flex-shrink-0 transition-all shadow-lg shadow-teal-500/30 transform hover:scale-105 active:scale-95 mb-0.5 sm:mb-0 border border-teal-300/30" id="chatVisualSendBtn">
+          <i class="fa-solid fa-paper-plane text-lg sm:text-xl ml-0.5 drop-shadow-sm"></i>
         </button>
       </div>
     </div>

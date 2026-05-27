@@ -890,11 +890,14 @@ async function loadChatMessages(telefone, quoteId) {
       const timeStr = new Date(msg.criado_em).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
       
       const div = document.createElement('div');
-      div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'}`;
+      div.className = `flex w-full ${isOut ? 'justify-end' : 'justify-start'} animate-[slideUp_0.2s_ease]`;
       div.innerHTML = `
-        <div class="max-w-[80%] rounded-2xl px-4 py-2 text-sm ${isOut ? 'bg-emerald-600 text-white rounded-br-sm' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-bl-sm'}">
-          <p class="whitespace-pre-wrap">${msg.mensagem}</p>
-          <span class="text-[9px] block text-right mt-1 ${isOut ? 'text-emerald-200' : 'text-slate-500'}">${timeStr}</span>
+        <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-[15px] shadow-md backdrop-blur-sm ${isOut ? 'bg-emerald-600 text-white rounded-br-sm shadow-emerald-600/20' : 'bg-slate-800 text-slate-200 border border-white/5 rounded-bl-sm shadow-black/20'}">
+          <p class="whitespace-pre-wrap leading-relaxed">${msg.mensagem}</p>
+          <span class="text-[10px] flex justify-end items-center mt-1.5 ${isOut ? 'text-emerald-200' : 'text-slate-400'} font-medium tracking-wide">
+            ${timeStr}
+            ${isOut ? '<i class="fa-solid fa-check-double ml-1.5 opacity-80"></i>' : ''}
+          </span>
         </div>
       `;
       msgContainer.appendChild(div);
@@ -936,6 +939,7 @@ async function sendChatMessage(e) {
     if (error) throw error;
     
     input.value = '';
+    input.style.height = ''; // reseta a altura da textarea
     loadChatMessages(telefone, quoteId);
   } catch (error) {
     console.error(error);
@@ -943,7 +947,7 @@ async function sendChatMessage(e) {
   } finally {
     input.disabled = false;
     btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane text-xl ml-1"></i>';
     input.focus();
   }
 }
